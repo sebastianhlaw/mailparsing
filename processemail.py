@@ -6,24 +6,15 @@ import sys
 import transaction
 import re
 
-# def extract_inline(list, tag):
-#     s = None
-#     for l in list:
-#         if tag in l:
-#             s = l
-#             break
-#     t = re.compile(tag)
-#     components = re.split(t, s, maxsplit=0, flags=0)
-#     s = components[1].strip()
-#     return s
-
 def extract(list, tag, offset=1, regex=None):
     s = None
-    if offset>0:
-        for i, l in enumerate(list):
-            if l.startswith(tag):
+    for i, l in enumerate(list):
+        if l.startswith(tag):
+            if offset>0:
                 s = list[i+offset]
-                break
+            elif offset==0:
+                s = l.replace(tag,'')
+            break
     return s
 
 def processemail(path, filename):

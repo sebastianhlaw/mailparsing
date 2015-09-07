@@ -8,7 +8,7 @@ class Sale:
         self.processTime = datetime.datetime
         self._members = 18
         self.map = {}
-        self._keys = ("messageTime", "saleID", "saleDate", "ticketsSold", "artist", "venue", "gigTime", "section",  "row",  "seats", "ticketType", "sent", "paidDate", "postageCosts", "postageRefunded", "otherCosts", "unitSaleValue", "netSaleValue")
+        self._keys = ("messageTime", "saleID", "saleDate", "ticketsSold", "artist", "venue", "gigTime", "section",  "row",  "seats", "ticketSaleType", "sent", "paidDate", "postageCosts", "postageRefunded", "otherCosts", "unitSaleValue", "netSaleValue")
         # values = [None]*self._members
         # self.data = dict(zip(self._keys,values))
 

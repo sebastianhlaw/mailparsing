@@ -10,7 +10,7 @@ input_path = 'C:/Users/Sebastian.Law/Google Drive/Rial Corporate/dump/'
 files = [file for file in os.listdir(input_path) if file.endswith('.txt')]
 
 for file in files:
-    print(file + "\n")
+    print("\n" + file + "\n")
     t = processemail.processemail(input_path, file)
 
 print('main.py complete')
