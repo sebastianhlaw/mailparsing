@@ -6,21 +6,6 @@ import sys
 import transaction
 import re
 
-def extract(list, tag, offset, split_string=None, split_element=None):
-    s = None
-    for i, l in enumerate(list):
-        if l.startswith(tag):
-            if offset>0:
-                s = list[i+offset]
-            elif offset==0:
-                s = l.replace(tag,'')
-            break
-    if s!=None:
-        if split_string!=None and split_element!=None:
-            s = (re.split(split_string,s))[split_element]
-        s = s.replace('£','').strip()
-    return s
-
 def processemail(path, filename):
     file = open(path + filename)
     file_text = file.read()
@@ -56,8 +41,6 @@ def processemail(path, filename):
         t = transaction.SaleSTUB()
     elif(vendor_bool[3]):
         t = transaction.SaleVIA()
-    # t.processTime = datetime.datetime.now()
-    # t.messageTime = datetime.datetime.strptime(message['Sent'],'%d %B %Y %H:%M')
 
     n = re.compile('\\n')
     message_array = re.split(n, message_body, maxsplit=0, flags=0)
@@ -67,11 +50,7 @@ def processemail(path, filename):
             start = i
             break
     message_array = message_array[start:]
-    
-    # tickets = extract(message_array,'Order #:')
-    for i, d in t.map.items():
-        if d[0]!=None:
-            d[4] = extract(message_array,d[0],d[1],d[2],d[3])
-        print(i,d)
+
+    t.process(message_array)
 
     return t

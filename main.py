@@ -2,15 +2,32 @@ __author__ = 'Sebastian.Law'
 
 import os
 import processemail
+import csv
 
-input_path = 'C:/Users/Sebastian.Law/Google Drive/Rial Corporate/dump/'
-# filename = '2015-08-27, 160956, VIA.txt'
-# root = os.path.abspath(path)
+# File names and locations
+base_path = 'C:/Users/Sebastian.Law/Dropbox/Shared/Rial Corporate Dev/'
+unprocessed_path = 'C:/Users/Sebastian.Law/Google Drive/Rial Corporate/dump/'
+processed_path = 'C:/Users/Sebastian.Law/Google Drive/Rial Corporate/parsed/'
+output_path = base_path + "automated output/"
 
-files = [file for file in os.listdir(input_path) if file.endswith('.txt')]
-
+# get list of unprocessed email files, then process them
+files = [file for file in os.listdir(unprocessed_path) if file.endswith('.txt')]
+transactions = []
 for file in files:
     print("\n" + file + "\n")
-    t = processemail.processemail(input_path, file)
+    transactions.append(processemail.processemail(unprocessed_path, file))
+
+# Extract the information
+with open(output_path + "email-log.csv", 'a', newline='') as f:
+    out = csv.writer(f)
+    for i, t in enumerate(transactions):
+        if i==0:
+            out.writerow(t.get_headings())
+        out.writerow(t.get_data())
+
+# Move the processed emails
+# for file in files:
+#     os.rename(unprocessed_path+file, processed_path+file)
+
 
 print('main.py complete')
