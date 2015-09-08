@@ -6,8 +6,8 @@ import csv
 
 # File names and locations
 base_path = 'C:/Users/Sebastian.Law/Dropbox/Shared/Rial Corporate Dev/'
-unprocessed_path = 'C:/Users/Sebastian.Law/Google Drive/Rial Corporate/dump/'
-processed_path = 'C:/Users/Sebastian.Law/Google Drive/Rial Corporate/parsed/'
+unprocessed_path = base_path + 'unprocessed emails/'
+processed_path = base_path + 'processed emails/'
 output_path = base_path + "automated output/"
 
 # get list of unprocessed email files, then process them
@@ -26,8 +26,7 @@ with open(output_path + "email-log.csv", 'a', newline='') as f:
         out.writerow(t.get_data())
 
 # Move the processed emails
-# for file in files:
-#     os.rename(unprocessed_path+file, processed_path+file)
-
+for file in files:
+    os.rename(unprocessed_path+file, processed_path+file)
 
 print('main.py complete')
