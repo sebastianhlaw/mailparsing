@@ -6,7 +6,7 @@ import sys
 import transaction
 import re
 
-def extract(list, tag, offset=1, regex=None):
+def extract(list, tag, offset, split_string=None, split_element=None):
     s = None
     for i, l in enumerate(list):
         if l.startswith(tag):
@@ -15,6 +15,10 @@ def extract(list, tag, offset=1, regex=None):
             elif offset==0:
                 s = l.replace(tag,'')
             break
+    if s!=None:
+        if split_string!=None and split_element!=None:
+            s = (re.split(split_string,s))[split_element]
+        s = s.replace('£','').strip()
     return s
 
 def processemail(path, filename):
@@ -67,7 +71,7 @@ def processemail(path, filename):
     # tickets = extract(message_array,'Order #:')
     for i, d in t.map.items():
         if d[0]!=None:
-            d[3] = extract(message_array,d[0],d[1],d[2])
-            print(i,d)
+            d[4] = extract(message_array,d[0],d[1],d[2],d[3])
+        print(i,d)
 
     return t
