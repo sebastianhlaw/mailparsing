@@ -7,7 +7,7 @@ import transaction
 import re
 
 def processemail(path, filename):
-    file = open(path + filename)
+    file = open(path + filename, encoding='utf-16')
     file_text = file.read()
     file.close()
     message = email.message_from_string(file_text)
@@ -34,13 +34,13 @@ def processemail(path, filename):
 
     t = None
     if(vendor_bool[0]):
-        t = transaction.SaleGET()
+        t = transaction.SaleGET(filename)
     elif(vendor_bool[1]):
-        t = transaction.SaleSEAT()
+        t = transaction.SaleSEAT(filename)
     elif(vendor_bool[2]):
-        t = transaction.SaleSTUB()
+        t = transaction.SaleSTUB(filename)
     elif(vendor_bool[3]):
-        t = transaction.SaleVIA()
+        t = transaction.SaleVIA(filename)
 
     n = re.compile('\\n')
     message_array = re.split(n, message_body, maxsplit=0, flags=0)
