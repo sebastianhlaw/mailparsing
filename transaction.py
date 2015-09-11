@@ -48,7 +48,7 @@ class SaleSTUB(Sale):
     def __init__(self, fileName):
         Sale.__init__(self, fileName)
         self.reseller = "STUB"
-        self.start_tag = "Sale info"
+        self.start_tag = "Hi Stephen,"
         self.tags = (None, "Order #:", "Order #:", "Quantity sold:", "Order #:", "Order #:", "Order #:", None, "Order #:", "Order #:", None, None, None, None, None, "Service fee:", "Your price:", "Your net payment:")
         self.offsets = (None, 0, 0, 1, 1, 1, 2, None, 3, 4, None, None, None, None, None, 1, 1, 1)
         self.split_string = (None, "\|", "Order date:", "x", "at", "at", None, None, None, None, None, None, None, None, None, None, None, None)

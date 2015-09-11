@@ -26,7 +26,7 @@ with open(output_path + "email-log.csv", 'a', newline='') as f:
         out.writerow(t.get_data())
 
 # Move the processed emails
-for file in files:
-    os.rename(unprocessed_path+file, processed_path+file)
+# for file in files:
+#     os.rename(unprocessed_path+file, processed_path+file)
 
 print('main.py complete')
