@@ -8,26 +8,29 @@ import email.header
 import datetime
 import re
 
+
 def connect():
-    imap = imaplib.IMAP4_SSL("imap.gmail.com")
+    connection = imaplib.IMAP4_SSL("imap.gmail.com")
     username = "gixtix.sales@gmail.com"
-    password = getpass.getpass()
-    imap.login(username, password)
-    return imap
+    password = "forex5684"  # getpass.getpass()
+    connection.login(username, password)
+    return connection
+
 
 imap = connect()
-# imap.list()
-folders = ["SaleConfirms/GET","SaleConfirms/SEAT","SaleConfirms/STUB","SaleConfirms/VIA"]
-folder = "INBOX"
-typ, mailbox = imap.select(folder, True) # readonly=True
+# imap.list()  # lists the items in the mailbox parent
+folders = ["SaleConfirms/GET", "SaleConfirms/SEAT", "SaleConfirms/STUB", "SaleConfirms/VIA"]
+folder = folders[0]  # "INBOX"
 
-# date = (datetime.date.today() - datetime.timedelta(2)).strftime("%d-%b-%Y")
+typ, mailbox = imap.select(folder, readonly=True)
+
+# date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
 # search = '(SINCE {0})'.format(date)
 search = '(UNSEEN)'
 # typ, data = imap.search(None,search)
 # ids = data[0].split()
 # ids = [id.decode("utf-8") for id in ids]
-typ, data = imap.uid("SEARCH",search)
+typ, data = imap.uid("SEARCH", search)
 uids = data[0].split()
 uids = [uid.decode("utf-8") for uid in uids]
 
@@ -40,6 +43,7 @@ for uid in uids:
             # for header_field in [ 'subject', 'to', 'from' ]:
             #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
 
+imap.close()
 
 # fetch = uid + ' (BODY.PEEK[HEADER] FLAGS)' #'(BODY.PEEK[HEADER.FIELDS (DATE SUBJECT)])'
 # typ, data = imap.uid("FETCH", fetch)
