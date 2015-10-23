@@ -1,6 +1,5 @@
 __author__ = 'Sebastian.Law'
 
-
 import imaplib
 import getpass
 import os
@@ -67,7 +66,6 @@ def get_messages(connection, folder, search='(UNSEEN)'):
                 #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
     return messages
 
-
 # fetch = uid + ' (BODY.PEEK[HEADER] FLAGS)' #'(BODY.PEEK[HEADER.FIELDS (DATE SUBJECT)])'
 # typ, data = imap.uid("FETCH", fetch)
 
@@ -89,3 +87,4 @@ def get_messages(connection, folder, search='(UNSEEN)'):
 #     flags, delimiter, mailbox_name = pattern.match(line).groups()
 #     mailbox_name = mailbox_name.strip('"')
 #     return (flags, delimiter, mailbox_name)
+
