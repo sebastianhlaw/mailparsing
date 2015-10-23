@@ -7,10 +7,17 @@ import email
 import html2text
 
 
-def connect():
+def connect(default=True):
     connection = imaplib.IMAP4_SSL("imap.gmail.com")
     username = "gixtix.sales@gmail.com"
-    password = getpass.getpass()
+    password = ''
+    if default is True:
+        password_path = os.path.join(os.path.expanduser('~'), 'Documents', 'password.txt')
+        password_file = open(password_path, "r")
+        password = password_file.read()
+        password_file.close()
+    else:
+        password = getpass.getpass()
     connection.login(username, password)
     return connection
 
