@@ -1,49 +1,71 @@
 __author__ = 'Sebastian.Law'
 
-import sys
 import imaplib
 import getpass
+import os
 import email
-import email.header
-import datetime
-import re
+import html2text
 
 
 def connect():
     connection = imaplib.IMAP4_SSL("imap.gmail.com")
     username = "gixtix.sales@gmail.com"
-    password = "forex5684"  # getpass.getpass()
+    password = getpass.getpass()
     connection.login(username, password)
     return connection
 
 
-imap = connect()
-# imap.list()  # lists the items in the mailbox parent
-folders = ["SaleConfirms/GET", "SaleConfirms/SEAT", "SaleConfirms/STUB", "SaleConfirms/VIA"]
-folder = folders[0]  # "INBOX"
+def extract_content(message):
+    assert type(message) == email.message.Message
+    content = None
+    if type(message.get_payload()) is str:
+        if message.get_content_type() == 'text/plain':
+            content = message.get_payload(decode=True).decode(message.get_content_charset())
+        elif message.get_content_type() == 'text/html':
+            content = message.get_payload(decode=True).decode(message.get_content_charset())
+            content = html2text.html2text(content).replace("|", "").replace("---", "")
+        else:
+            print(os.path.basename(__file__), "ERROR")
+    else:
+        for part in message.get_payload():
+            if part.get_content_type() == 'text/plain':
+                content = part.get_payload(decode=True).decode(part.get_content_charset())
+                break
+        if content is None:  # no plain text found, may be nested in multipart
+            for part in message.get_payload():
+                if part.get_content_type() == 'multipart/alternative':
+                    for subpart in part.get_payload():
+                        if subpart.get_content_type() == 'text/plain':
+                            content = subpart.get_payload(decode=True).decode(subpart.get_content_charset())
+                            break
+                    if content is not None:
+                        break
+    return content
 
-typ, mailbox = imap.select(folder, readonly=True)
 
-# date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
-# search = '(SINCE {0})'.format(date)
-search = '(UNSEEN)'
-# typ, data = imap.search(None,search)
-# ids = data[0].split()
-# ids = [id.decode("utf-8") for id in ids]
-typ, data = imap.uid("SEARCH", search)
-uids = data[0].split()
-uids = [uid.decode("utf-8") for uid in uids]
+def get_messages(connection, folder, search='(UNSEEN)'):
+    # TODO: assert that the inputs are reasonable
+    # imap.list()  # lists the items in the mailbox parent
+    typ, mailbox = connection.select(folder, readonly=True)
+    # date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
+    # search = '(SINCE {0})'.format(date)
+    search = '(UNSEEN)'
+    # typ, data = imap.search(None,search)
+    # ids = data[0].split()
+    # ids = [id.decode("utf-8") for id in ids]
+    typ, data = connection.uid("SEARCH", search)
+    uids = data[0].split()
+    uids = [uid.decode("utf-8") for uid in uids]
+    messages = []
+    for uid in uids:
+        typ, data = connection.uid("FETCH", uid + ' (RFC822)')
+        for part in data:
+            if isinstance(part, tuple):
+                messages.append(email.message_from_bytes(part[1]))
+                # for header_field in [ 'subject', 'to', 'from' ]:
+                #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
+    return messages
 
-messages = []
-for uid in uids:
-    typ, data = imap.uid("FETCH", uid + ' (RFC822)')
-    for part in data:
-        if isinstance(part, tuple):
-            messages.append(email.message_from_bytes(part[1]))
-            # for header_field in [ 'subject', 'to', 'from' ]:
-            #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
-
-imap.close()
 
 # fetch = uid + ' (BODY.PEEK[HEADER] FLAGS)' #'(BODY.PEEK[HEADER.FIELDS (DATE SUBJECT)])'
 # typ, data = imap.uid("FETCH", fetch)
@@ -66,61 +88,3 @@ imap.close()
 #     flags, delimiter, mailbox_name = pattern.match(line).groups()
 #     mailbox_name = mailbox_name.strip('"')
 #     return (flags, delimiter, mailbox_name)
-
-# EMAIL_ACCOUNT = "sebastianhlaw@gmail.com"
-# EMAIL_FOLDER = "INBOX"
-
-# def process_mailbox(M):
-#     """
-#     Do something with emails messages in the folder.
-#     For the sake of this example, print some headers.
-#     """
-#
-#     rv, data = M.search(None, "ALL")
-#     if rv != 'OK':
-#         print("No messages found!")
-#         return
-#
-#     for num in data[0].split():
-#         rv, data = M.fetch(num, '(RFC822)')
-#         if rv != 'OK':
-#             print("ERROR getting message", num)
-#             return
-#
-#         msg = email.message_from_bytes(data[0][1])
-#         hdr = email.header.make_header(email.header.decode_header(msg['Subject']))
-#         subject = str(hdr)
-#         print('Message %s: %s' % (num, subject))
-#         print('Raw Date:', msg['Date'])
-#         # Now convert to local date-time
-#         date_tuple = email.utils.parsedate_tz(msg['Date'])
-#         if date_tuple:
-#             local_date = datetime.datetime.fromtimestamp(
-#                 email.utils.mktime_tz(date_tuple))
-#             print ("Local Date:", local_date.strftime("%a, %d %b %Y %H:%M:%S"))
-
-
-# M = imaplib.IMAP4_SSL('imap.gmail.com')
-#
-# try:
-#     rv, data = M.login(EMAIL_ACCOUNT, getpass.getpass())
-# except imaplib.IMAP4.error:
-#     print ("LOGIN FAILED!!! ")
-#     sys.exit(1)
-#
-# print(rv, data)
-#
-# rv, mailboxes = M.list()
-# if rv == 'OK':
-#     print("Mailboxes:")
-#     print(mailboxes)
-#
-# rv, data = M.select(EMAIL_FOLDER, True)
-# if rv == 'OK':
-#     print("Processing mailbox...\n")
-#     process_mailbox(M)
-#     M.close()
-# else:
-#     print("ERROR: Unable to open mailbox ", rv)
-#
-# M.logout()
