@@ -8,12 +8,12 @@ import html2text
 
 
 def connect(default=True):
-    connection = imaplib.IMAP4_SSL("imap.gmail.com")
-    username = "gixtix.sales@gmail.com"
+    connection = imaplib.IMAP4_SSL('imap.gmail.com')
+    username = 'gixtix.sales@gmail.com'
     password = ''
     if default is True:
         password_path = os.path.join(os.path.expanduser('~'), 'Documents', 'password.txt')
-        password_file = open(password_path, "r")
+        password_file = open(password_path, 'r')
         password = password_file.read()
         password_file.close()
     else:
@@ -65,7 +65,7 @@ def get_messages(connection, folder, search='(UNSEEN)'):
     uids = [uid.decode("utf-8") for uid in uids]
     messages = []
     for uid in uids:
-        typ, data = connection.uid("FETCH", uid + ' (RFC822)')
+        typ, data = connection.uid('FETCH', uid + ' (RFC822)')
         for part in data:
             if isinstance(part, tuple):
                 messages.append(email.message_from_bytes(part[1]))
