@@ -19,32 +19,32 @@ def processemail(path, filename):
     message_body = message.get_payload()
 
     # create a list/dictionary of vendors available
-    vendors = ("GET","SEAT","STUB","VIA") # tuple, immutable. List: vendors = ["GET","SEAT","STUB","VIA"]
-    vendor_tags = ("getmein","seatwave","stubhub","viagogo")
-    vendor_list = list(zip(vendors,vendor_tags))
+    vendors = ("GET", "SEAT", "STUB", "VIA")  # tuple, immutable. List: vendors = ["GET","SEAT","STUB","VIA"]
+    vendor_tags = ("getmein", "seatwave", "stubhub", "viagogo")
+    vendor_list = list(zip(vendors, vendor_tags))
 
     vendor_bool = [x[1] in message_body.lower() for x in vendor_list]
     temp = 0
     for v in vendor_bool:
-        if v==True:
-            temp +=1
-    if temp!=1:
+        if v is True:
+            temp += 1
+    if temp != 1:
         print("cannot determine message source")
         sys.exit()
 
     t = None
-    if(vendor_bool[0]):
+    if vendor_bool[0]:
         t = transaction.SaleGET(filename)
-    elif(vendor_bool[1]):
+    elif vendor_bool[1]:
         t = transaction.SaleSEAT(filename)
-    elif(vendor_bool[2]):
+    elif vendor_bool[2]:
         t = transaction.SaleSTUB(filename)
-    elif(vendor_bool[3]):
+    elif vendor_bool[3]:
         t = transaction.SaleVIA(filename)
 
     n = re.compile('\\n')
     message_array = re.split(n, message_body, maxsplit=0, flags=0)
-    message_array = [l.strip() for l in message_array if l.strip()!='']
+    message_array = [l.strip() for l in message_array if l.strip() != '']
     for i, line in enumerate(message_array):
         if line == t.start_tag:
             start = i

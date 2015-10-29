@@ -10,7 +10,7 @@ import html2text
 def connect(default=True):
     connection = imaplib.IMAP4_SSL('imap.gmail.com')
     username = 'gixtix.sales@gmail.com'
-    password = ''
+    # password = ''
     if default is True:
         password_path = os.path.join(os.path.expanduser('~'), 'Documents', 'password.txt')
         password_file = open(password_path, 'r')
@@ -56,7 +56,7 @@ def get_messages(connection, folder, search='(UNSEEN)'):
     typ, mailbox = connection.select(folder, readonly=True)
     # date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
     # search = '(SINCE {0})'.format(date)
-    search = '(UNSEEN)'
+    # search = '(UNSEEN)'  # this is the default
     # typ, data = imap.search(None,search)
     # ids = data[0].split()
     # ids = [id.decode("utf-8") for id in ids]

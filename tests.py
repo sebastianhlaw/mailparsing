@@ -1,8 +1,23 @@
 __author__ = 'Sebastian.Law'
 
-import processemail
-import transaction
-import re
+
+# This is to import the regex components
+import csv
+
+def import_regex():
+    file = open("C:\\Users\\Sebastian.Law\\Google Drive\\Rial Corporate Dev\\workings\\tables2.csv", 'r', newline='')
+    reader = csv.reader(file, delimiter=",")
+    data = [r for r in reader]
+    file.close()
+    return data
+
+d = import_regex()
+
+STUB = [r[1:] for r in d if r[0] == 'STUB']
+
+# import processemail
+# import transaction
+# import re
 
 # s = []
 # s.append('Quantity:')
@@ -34,23 +49,23 @@ import re
 #             print("error: e")
 
 
-import datetime
-
-strings = []
-strings.append('Sun, 26/07/2015, 19:00 BST')
-strings.append('Thursday, 1 October 2015 19:00')
-strings.append('7 November 2015, 19:00')
-strings.append('30-Oct-2015 19:30:00')
-
-strings[0] = strings[0].replace("BST","").replace("GMT","").strip()
-
-formats = []
-formats.append('%a, %d/%m/%Y, %H:%M')
-formats.append('%A, %d %B %Y %H:%M')
-formats.append('%d %B %Y, %H:%M')
-formats.append('%d-%b-%Y %H:%M:%S')
-
-dates = [datetime.datetime.strptime(strings[i],f) for i, f in enumerate(formats)]
-
-
-print("\ntests.py complete\n")
+# import datetime
+#
+# strings = []
+# strings.append('Sun, 26/07/2015, 19:00 BST')
+# strings.append('Thursday, 1 October 2015 19:00')
+# strings.append('7 November 2015, 19:00')
+# strings.append('30-Oct-2015 19:30:00')
+#
+# strings[0] = strings[0].replace("BST","").replace("GMT","").strip()
+#
+# formats = []
+# formats.append('%a, %d/%m/%Y, %H:%M')
+# formats.append('%A, %d %B %Y %H:%M')
+# formats.append('%d %B %Y, %H:%M')
+# formats.append('%d-%b-%Y %H:%M:%S')
+#
+# dates = [datetime.datetime.strptime(strings[i],f) for i, f in enumerate(formats)]
+#
+#
+# print("\ntests.py complete\n")
