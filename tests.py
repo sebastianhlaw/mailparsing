@@ -1,19 +1,45 @@
 __author__ = 'Sebastian.Law'
 
 
-# This is to import the regex components
-import csv
-
-def import_regex():
-    file = open("C:\\Users\\Sebastian.Law\\Google Drive\\Rial Corporate Dev\\workings\\tables2.csv", 'r', newline='')
-    reader = csv.reader(file, delimiter=",")
-    data = [r for r in reader]
-    file.close()
-    return data
-
-d = import_regex()
-
-STUB = [r[1:] for r in d if r[0] == 'STUB']
+# # This is to import the regex components
+# import files
+# import csv
+# import transaction
+#
+#
+# def import_regex_parameters():
+#     file = open(files.parameters_file, 'r', newline='')
+#     reader = csv.reader(file, delimiter=",")
+#     data = [r for r in reader]
+#     file.close()
+#     return data
+#
+#
+#
+# regex_parameters = import_regex_parameters()
+#
+#
+#
+# t_keys = transaction.Sale().get_data().keys()
+#
+# _ID = 'STUB'
+#
+# keys = [r[1] for r in regex_parameters if r[0] == _ID]
+# parameters = [r[2:] for r in regex_parameters if r[0] == _ID]
+# checks = [False]*len(t_keys)
+# for i, k in enumerate(t_keys):
+#     for key in keys:
+#         if k == key:
+#             checks[i] = True
+#             break
+# check = True
+# for i in checks:
+#     if i is False:
+#         check = False
+# if check is False:
+#     print("transaction keys do not match those in the source file relating to " + _ID)
+#
+# _parameters = dict(zip(keys, parameters))
 
 # import processemail
 # import transaction

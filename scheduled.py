@@ -1,6 +1,5 @@
 __author__ = 'Sebastian.Law'
 
-import os
 import datetime
 
 path = "C:/Users/Sebastian.Law/Downloads/"

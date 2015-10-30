@@ -1,8 +1,37 @@
 __author__ = 'Sebastian.Law'
 
+# External libraries
 import datetime
 import re
+import csv
+
+# Local files
+import files
 import transaction
+
+
+# Load the regex parameters from external csv file for a given id
+def get_parameter_map(id):
+    file = open(files.parameters_file, 'r', newline='')
+    reader = csv.reader(file, delimiter=",")
+    regex_parameters = [r for r in reader]
+    file.close()
+    keys = [r[1] for r in regex_parameters if r[0] == id]
+    parameters = [r[2:] for r in regex_parameters if r[0] == id]
+    transaction_keys = transaction.Sale().get_data().keys()
+    checks = [False]*len(transaction_keys)
+    for i, k in enumerate(transaction_keys):
+        for key in keys:
+            if k == key:
+                checks[i] = True
+                break
+    check = True
+    for i in checks:
+        if i is False:
+            check = False
+    if check is False:
+        print("transaction keys do not match those in the source file relating to " + id)
+    return dict(zip(keys, parameters))
 
 
 def extract(lines, tag, offset, split_string=None, split_element=None):
@@ -47,10 +76,7 @@ class Stubhub(Vendor):
         self._ID = 'STUB'
         self._tag = 'stubhub'
         self._sale_start_tag = "Hi Stephen,"
-        self._sale_tags = (None, "Order #:", "Order #:", "Quantity sold:", "Order #:", "Order #:", "Order #:", None, "Order #:", "Order #:", None, None, None, None, None, "Service fee:", "Your price:", "Your net payment:")
-        self._sale_offsets = (None, 0, 0, 1, 1, 1, 2, None, 3, 4, None, None, None, None, None, 1, 1, 1)
-        self._sale_splits = (None, "\|", "Order date:", "x", "at", "at", None, None, None, None, None, None, None, None, None, None, None, None)
-        self._sale_elements = (None, 0, 1, 1, 0, 1, None, None, None, None, None, None, None, None, None, None, None, None)
+
         self._date_format = '%a, %d/%m/%Y, %H:%M'
 
     def cleanDate(self, i):
@@ -61,10 +87,6 @@ class Getmein(Vendor):
         self._ID = 'GET'
         self._tag = 'getmein'
         self._sale_start_tag = "Order Summary"
-        self._sale_tags = (None, "Order Number:", None, "Quantity:", "Event:", "Venue:", "Date of Event:", "Section:", "Row:", "Seat(s):", "Ticket Type:", None, None, None, None, None, "Price per ticket:", None)
-        self._sale_offsets = (None, 1, None, 1, 1, 1, 1, 1, 1, 1, 1, None, None, None, None, None, 1, None)
-        self._sale_splits = (None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
-        self._sale_elements = (None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
         self._date_format = '%A, %d %B %Y %H:%M'
 
     def cleanDate(self, i):
@@ -75,10 +97,6 @@ class Viagogo(Vendor):
         self._ID = 'VIA'
         self._tag = 'viagogo'
         self._sale_start_tag = "Order Information"
-        self._sale_tags = (None, "Order ID:", None, "Number of Tickets:", "Event:", "Venue:", "Date:", "Ticket(s):", None, None, "Delivery Method:", None, None, None, "Shipping Refund:", None, "Price per Ticket:", "Total Proceeds:")
-        self._sale_offsets = (None, 0, None, 1, 1, 1, 1, 1, None, None, 1, None, None, None, 1, None, 1, 1)
-        self._sale_splits = (None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
-        self._sale_elements = (None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
         self._date_format = '%d %B %Y, %H:%M'
 
     def cleanDate(self, i):
@@ -89,10 +107,6 @@ class Seatwave(Vendor):
         self._ID = 'SEAT'
         self._tag = 'seatwave'
         self._sale_start_tag = "Sale confirmation"
-        self._sale_tags = (None, "Your reference number for this ticket sale is:", None, "Quantity:", "Which tickets have I sold?", "Which tickets have I sold?", "Which tickets have I sold?", "Block:", "Row:", None, "Listing ID:", None, None, None, None, None, "Selling price:", None)
-        self._sale_offsets = (None, 0, None, 1, 1, 2, 2, 1, 1, None, 2, None, None, None, None, None, 1, None)
-        self._sale_splits = (None, None, None, "ticket\(s\)", None, "-", "-", None, None, None, None, None, None, None, None, None, "per ticket", None)
-        self._sale_elements = (None, None, None, 0, None, 1, 0, None, None, None, None, None, None, None, None, None, 0, None)
         self._date_format = '%d/%m/%Y %H:%M'
 
     def cleanDate(self, i):

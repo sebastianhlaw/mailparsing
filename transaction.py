@@ -3,8 +3,7 @@ __author__ = 'Sebastian.Law'
 
 class Sale:
     def __init__(self):
-        keys = ("messageTime",
-                "transactionID",
+        keys = ("transactionID",
                 "transactionDate",
                 "ticketsSold",
                 "artist",
