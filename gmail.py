@@ -1,19 +1,20 @@
 __author__ = 'Sebastian.Law'
 
+# TODO: deal with when there are 0 emails to pull
+
 import imaplib
 import getpass
 import os
 import email
 import html2text
+import files
 
 
 def connect(default=True):
     connection = imaplib.IMAP4_SSL('imap.gmail.com')
     username = 'gixtix.sales@gmail.com'
-    # password = ''
     if default is True:
-        password_path = os.path.join(os.path.expanduser('~'), 'Documents', 'password.txt')
-        password_file = open(password_path, 'r')
+        password_file = open(files.password_file, 'r')
         password = password_file.read()
         password_file.close()
     else:
@@ -22,7 +23,31 @@ def connect(default=True):
     return connection
 
 
-def extract_content(message):
+def get_messages(connection, folder, search='(UNSEEN)'):
+    # TODO: assert that the inputs are reasonable
+    # imap.list()  # lists the items in the mailbox parent
+    typ, mailbox = connection.select(folder, readonly=True)
+    # date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
+    # search = '(SINCE {0})'.format(date)
+    # search = '(UNSEEN)'  # this is the default
+    # typ, data = imap.search(None,search)
+    # ids = data[0].split()
+    # ids = [id.decode("utf-8") for id in ids]
+    typ, data = connection.uid("SEARCH", search)
+    uids = data[0].split()
+    uids = [uid.decode("utf-8") for uid in uids]
+    messages = []
+    for uid in uids:
+        typ, data = connection.uid('FETCH', uid + ' (RFC822)')
+        for part in data:
+            if isinstance(part, tuple):
+                messages.append(email.message_from_bytes(part[1]))
+                # for header_field in [ 'subject', 'to', 'from' ]:
+                #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
+    return messages
+
+
+def extract_message_content(message):
     assert type(message) == email.message.Message
     content = None
     if type(message.get_payload()) is str:
@@ -50,28 +75,14 @@ def extract_content(message):
     return content
 
 
-def get_messages(connection, folder, search='(UNSEEN)'):
-    # TODO: assert that the inputs are reasonable
-    # imap.list()  # lists the items in the mailbox parent
-    typ, mailbox = connection.select(folder, readonly=True)
-    # date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
-    # search = '(SINCE {0})'.format(date)
-    # search = '(UNSEEN)'  # this is the default
-    # typ, data = imap.search(None,search)
-    # ids = data[0].split()
-    # ids = [id.decode("utf-8") for id in ids]
-    typ, data = connection.uid("SEARCH", search)
-    uids = data[0].split()
-    uids = [uid.decode("utf-8") for uid in uids]
-    messages = []
-    for uid in uids:
-        typ, data = connection.uid('FETCH', uid + ' (RFC822)')
-        for part in data:
-            if isinstance(part, tuple):
-                messages.append(email.message_from_bytes(part[1]))
-                # for header_field in [ 'subject', 'to', 'from' ]:
-                #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
-    return messages
+def get_message_contents(folder):
+    connection = connect()
+    messages = get_messages(connection, folder)
+    connection.close()
+    contents = [extract_message_content(m) for m in messages]
+    connection.logout()
+    return contents
+
 
 # fetch = uid + ' (BODY.PEEK[HEADER] FLAGS)' #'(BODY.PEEK[HEADER.FIELDS (DATE SUBJECT)])'
 # typ, data = imap.uid("FETCH", fetch)
