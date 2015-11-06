@@ -1,16 +1,19 @@
 __author__ = 'Sebastian.Law'
 
-# todo: not sure it's appropriate to have 'text_to_array' and 'extract' functions in this file
+# todo: not sure it's appropriate to have 'text_to_array' functions in this file
+# TODO: date, value cleaning functionality
 
 import re
 import csv
 import ast
 import files
 import transaction
+import datetime
 
 
 def text_to_array(text, start_from=None):
-    array = re.split('\\n', text, maxsplit=0, flags=0)
+    text = text.replace(">", " ").replace("<", " ")
+    array = re.split("\\n", text, maxsplit=0, flags=0)
     array = [l.strip() for l in array if l.strip() != '']
     if start_from is not None:
         for i, line in enumerate(array):
@@ -19,30 +22,6 @@ def text_to_array(text, start_from=None):
         if i != len(array)-1:
             array = array[i:]
     return array
-
-
-def extract(lines, parameter):
-    assert(len(parameter) == 4)
-    tag = parameter[0]
-    offset = parameter[1]
-    split_string = parameter[2]
-    split_element = parameter[3]
-    if tag is None:
-        return None
-    else:
-        s = None
-        for i, l in enumerate(lines):
-            if l.startswith(tag):
-                if offset > 0:
-                    s = lines[i+offset]
-                elif offset is 0:
-                    s = l.replace(tag, '')
-                break
-        if s is not None:
-            if split_string is not None and split_element is not None:
-                s = (re.split(split_string, s))[split_element]
-            s = s.replace('£', '').strip()
-        return s
 
 
 def load_vendors():
@@ -57,7 +36,7 @@ class Vendor:
         self._sale_start_tag = None
         self._date_format = None
         self._key_parameters = None
-        self.processTime = None
+        # self.processTime = None
 
     def _import_parameters(self):
         file = open(files.parameters_file, 'r', newline='')
@@ -97,13 +76,49 @@ class Vendor:
     def extract_transaction(self, lines):
         if self._key_parameters is not None:
             t = transaction.Sale()
-            for key, value in self._key_parameters.items():
-                result = extract(lines, value)
+            for key, parameter in self._key_parameters.items():
+                print(key, parameter)
+                result = self.extract(lines, parameter)
                 t.set_data_item(key, result)
             return t
         else:
             print("Parameters not imported")
             return None
+
+    def extract(self, lines, parameter):
+        assert(len(parameter) == 5)
+        tag = parameter[0]
+        offset = parameter[1]
+        split_string = parameter[2]
+        split_element = parameter[3]
+        data_type = parameter[4]
+        if tag is None:
+            return None
+        else:
+            string = None
+            for i, l in enumerate(lines):
+                if l.startswith(tag):
+                    if offset > 0:
+                        string = lines[i+offset]
+                    elif offset is 0:
+                        string = l.replace(tag, '')
+                    break
+            if string is not None:
+                if split_string is not None and split_element is not None:
+                    string = (re.split(split_string, string))[split_element]
+                string = string.strip()
+                print(data_type + "\t" + string)
+                if data_type == 'int':
+                    result = ast.literal_eval(string.replace(" ", ""))
+                elif data_type == 'price':
+                    result = ast.literal_eval(string.replace(" ", "").replace("£", ""))
+                elif data_type == 'datetime':
+                    result = string.replace("BST", "").replace("GMT", "").strip()
+                    # todo: ^ sort date format - deleted this code like a nonce
+                else:
+                    result = string
+                print("...", result)
+                return result
 
 
 class Stubhub(Vendor):

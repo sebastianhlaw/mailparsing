@@ -1,30 +1,27 @@
 __author__ = 'Sebastian.Law'
 
-# TODO: add metadata (processing timestamp, email time?) maybe processing timestamp should be in main
-# TODO: add printing out data
-# TODO: date cleaning functionality
-
-import datetime
 
 class Sale:
     def __init__(self):
-        keys = ("transactionID",
-                "transactionDate",
-                "ticketsSold",
-                "artist",
-                "venue",
-                "gigTime",
-                "section",
-                "row",
-                "seats",
-                "ticketSaleType",
-                "sent",
-                "paidDate",
-                "postageCosts",
-                "postageRefunded",
-                "otherCosts",
-                "unitSaleValue",
-                "netSaleValue")
+        keys = (
+            "transactionID",
+            "transactionDate",
+            "ticketsSold",
+            "artist",
+            "venue",
+            "gigTime",
+            "section",
+            "row",
+            "seats",
+            "ticketSaleType",
+            "sent",
+            "paidDate",
+            "postageCosts",
+            "postageRefunded",
+            "otherCosts",
+            "unitSaleValue",
+            "netSaleValue"
+        )
         data = [None]*len(keys)
         self._dictionary = dict(zip(keys, data))
         self._email_timestamp = None
@@ -38,13 +35,15 @@ class Sale:
         else:
             print("key '" + key + "' is not recognised.")
 
+    def set_email_timestamp(self, timestamp):
+        self._email_timestamp = timestamp
+
     def get_headings(self):
-        return self._dictionary.keys()
+        return ['emailTimestamp'] + list(self._dictionary.keys())
 
     def get_data(self):
-        return self._dictionary.items()
-
-
-
-    # def clean_date(self, i):
-    #     self._values[i] = datetime.datetime.strptime(self._values[i].replace("BST", "").replace("GMT", "").strip(), self._date_format)
+        # if self._email_timestamp is not None:
+        return [self._email_timestamp] + list(self._dictionary.values())
+        # else:
+        #     print("email timestamp not set")
+        #     return None

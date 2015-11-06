@@ -2,11 +2,11 @@ __author__ = 'Sebastian.Law'
 
 import os
 
-private_path = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev', 'private')
+local_path = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev')
 
-parameters_file = os.path.join(private_path, 'tables.csv')
-password_file = os.path.join(private_path, 'password.txt')
-pickle_file = os.path.join(private_path, 'emails.pkl')
+parameters_file = os.path.join(local_path, 'private', 'tables.csv')
+password_file = os.path.join(local_path, 'private', 'password.txt')
+pickle_file = os.path.join(local_path, 'private', 'emails.pkl')
 
 shared_path = os.path.join(os.path.expanduser('~'), 'Dropbox', 'Shared', 'Rial Corporate Dev')
 

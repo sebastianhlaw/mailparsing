@@ -1,6 +1,33 @@
 __author__ = 'Sebastian.Law'
 
 
+
+# stubs = raw_data['STUB']
+# text = stubs[0]
+#
+# array = vendors.text_to_array(text)
+#
+# stub = vendor_list[0]
+# t = stub.extract_transaction(array)
+
+# # get list of unprocessed email files, then process them
+# files = [file for file in os.listdir(files.unprocessed_path) if file.endswith('.txt')]
+# transactions = []
+# for file in files:
+#     print("\n" + file + "\n")
+#     transactions.append(processemail.processemail(files.unprocessed_path, file))
+#
+# # Extract the information
+
+#
+# # Move the processed emails
+# # for file in files:
+# #     os.rename(files.unprocessed_path+file, files.processed_path+file)
+#
+# print('main.py complete')
+
+
+
 # # This is to import the regex components
 # import files
 # import csv

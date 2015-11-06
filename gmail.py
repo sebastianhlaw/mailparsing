@@ -1,6 +1,7 @@
 __author__ = 'Sebastian.Law'
 
 # TODO: deal with when there are 0 emails to pull
+# TODO: add extraction of mail timestamp
 
 import imaplib
 import getpass
