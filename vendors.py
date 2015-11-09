@@ -1,7 +1,7 @@
 __author__ = 'Sebastian.Law'
 
 # todo: not sure it's appropriate to have 'text_to_array' functions in this file
-# TODO: date, value cleaning functionality
+# TODO: proper error logging for when the date formats change
 
 import re
 import csv
@@ -35,6 +35,7 @@ class Vendor:
         self._tag = None
         self._sale_start_tag = None
         self._date_format = None
+        self._time_format = None
         self._key_parameters = None
         # self.processTime = None
 
@@ -107,18 +108,18 @@ class Vendor:
                 if split_string is not None and split_element is not None:
                     string = (re.split(split_string, string))[split_element]
                 string = string.strip()
-                print(data_type + "\t" + string)
+                print(data_type + "\t", string)
                 if data_type == 'int':
-                    result = ast.literal_eval(string.replace(" ", ""))
+                    string = ast.literal_eval(string.replace(" ", ""))
                 elif data_type == 'price':
-                    result = ast.literal_eval(string.replace(" ", "").replace("£", ""))
-                elif data_type == 'datetime':
-                    result = string.replace("BST", "").replace("GMT", "").strip()
-                    # todo: ^ sort date format - deleted this code like a nonce
-                else:
-                    result = string
-                print("...", result)
-                return result
+                    string = ast.literal_eval(string.replace(" ", "").replace("£", ""))
+                elif data_type == 'date':
+                    string = str(datetime.datetime.strptime(string.strip(), self._date_format).date())
+                elif data_type == 'time':
+                    string = str(datetime.datetime.strptime(
+                        string.replace("BST", "").replace("GMT", "").strip(), self._time_format))
+                print("\t\t", string)
+                return string
 
 
 class Stubhub(Vendor):
@@ -126,7 +127,8 @@ class Stubhub(Vendor):
         self._ID = 'STUB'
         self._tag = 'stubhub'
         self._sale_start_tag = "Hi Stephen,"
-        self._date_format = '%a, %d/%m/%Y, %H:%M'
+        self._date_format = '%d/%m/%Y'
+        self._time_format = '%a, %d/%m/%Y, %H:%M'
         self._import_parameters()
 
 
@@ -135,7 +137,8 @@ class Getmein(Vendor):
         self._ID = 'GET'
         self._tag = 'getmein'
         self._sale_start_tag = "Order Summary"
-        self._date_format = '%A, %d %B %Y %H:%M'
+        self._date_format = '%A, %d %B %Y'
+        self._time_format = '%A, %d %B %Y %H:%M'
         self._import_parameters()
 
 
@@ -144,7 +147,8 @@ class Viagogo(Vendor):
         self._ID = 'VIA'
         self._tag = 'viagogo'
         self._sale_start_tag = "Order Information"
-        self._date_format = '%d %B %Y, %H:%M'
+        self._date_format = '%d %B %Y'
+        self._time_format = '%d %B %Y, %H:%M'
         self._import_parameters()
 
 
@@ -153,5 +157,6 @@ class Seatwave(Vendor):
         self._ID = 'SEAT'
         self._tag = 'seatwave'
         self._sale_start_tag = "Sale confirmation"
-        self._date_format = '%d/%m/%Y %H:%M'
+        self._date_format = '%d/%m/%Y'
+        self._time_format = '%d/%m/%Y %H:%M'
         self._import_parameters()
