@@ -1,7 +1,6 @@
 __author__ = 'Sebastian.Law'
 
 # todo: not sure it's appropriate to have 'text_to_array' functions in this file
-# TODO: proper error logging for when the date formats change
 
 import re
 import csv
@@ -12,7 +11,7 @@ import datetime
 
 
 def text_to_array(text, start_from=None):
-    text = text.replace(">", " ").replace("<", " ")
+    text = text.replace(">", " ").replace("<", " ").replace("\t", " ").replace("*", " ").replace("|", "\n")
     array = re.split("\\n", text, maxsplit=0, flags=0)
     array = [l.strip() for l in array if l.strip() != '']
     if start_from is not None:
@@ -25,7 +24,7 @@ def text_to_array(text, start_from=None):
 
 
 def load_vendors():
-    vendors = [Stubhub(), Getmein(), Viagogo(), Seatwave()]
+    vendors = [Stubhub(), Getmein(), Viagogo(), Seatwave(), Stubhub2()]
     return vendors
 
 
@@ -71,14 +70,15 @@ class Vendor:
     def get_id(self):
         return self._ID
 
-    def gmail_folder(self):
+    def get_gmail_folder(self):
         return 'SaleConfirms/' + self._ID
 
-    def extract_transaction(self, lines):
+    def extract_transaction(self, text):
+        lines = text_to_array(text, self._sale_start_tag)
         if self._key_parameters is not None:
             t = transaction.Sale()
             for key, parameter in self._key_parameters.items():
-                print(key, parameter)
+                # print(key, parameter)
                 result = self.extract(lines, parameter)
                 t.set_data_item(key, result)
             return t
@@ -99,26 +99,36 @@ class Vendor:
             string = None
             for i, l in enumerate(lines):
                 if l.startswith(tag):
-                    if offset > 0:
-                        string = lines[i+offset]
-                    elif offset is 0:
+                    if offset is None:
+                        if l.replace(tag, '').strip() == '':
+                            offset = 1
+                        else:
+                            offset = 0
+                    if offset == 0:
                         string = l.replace(tag, '')
-                    break
+                    else:
+                        string = lines[i+offset]
+                    break  # exit once we've found the tag
             if string is not None:
                 if split_string is not None and split_element is not None:
-                    string = (re.split(split_string, string))[split_element]
+                    try:
+                        string = (re.split(split_string, string))[split_element]
+                    except Exception as e:
+                        print("string:", string)
+                        print("split_string:", split_string)
+                        print("split_element:", split_element)
+                        print(e)
+                        string = ""
                 string = string.strip()
-                print(data_type + "\t", string)
                 if data_type == 'int':
                     string = ast.literal_eval(string.replace(" ", ""))
                 elif data_type == 'price':
-                    string = ast.literal_eval(string.replace(" ", "").replace("£", ""))
+                    string = ast.literal_eval(string.replace(" ", "").replace("£", "").replace("GBP", ""))
                 elif data_type == 'date':
-                    string = str(datetime.datetime.strptime(string.strip(), self._date_format).date())
+                        string = str(datetime.datetime.strptime(string.strip(), self._date_format).date())
                 elif data_type == 'time':
                     string = str(datetime.datetime.strptime(
                         string.replace("BST", "").replace("GMT", "").strip(), self._time_format))
-                print("\t\t", string)
                 return string
 
 
@@ -159,4 +169,14 @@ class Seatwave(Vendor):
         self._sale_start_tag = "Sale confirmation"
         self._date_format = '%d/%m/%Y'
         self._time_format = '%d/%m/%Y %H:%M'
+        self._import_parameters()
+
+
+class Stubhub2(Vendor):
+    def __init__(self):
+        self._ID = 'STUB2'
+        self._tag = 'stubhub'
+        self._sale_start_tag = "Hi Stephen,"
+        self._date_format = '%d/%m/%Y'
+        self._time_format = '%a, %d/%m/%Y, %H:%M'
         self._import_parameters()

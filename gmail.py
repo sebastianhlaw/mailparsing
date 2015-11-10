@@ -76,12 +76,13 @@ def extract_message_content(message):
     return content
 
 
-def get_message_contents(folder):
+def get_message_contents(folder, search='(UNSEEN)'):
     connection = connect()
-    messages = get_messages(connection, folder)
+    messages = get_messages(connection, folder, search)
     connection.close()
     contents = [extract_message_content(m) for m in messages]
     connection.logout()
+    print("get_message_contents:", folder, "processed,", len(contents), "messages pulled.")
     return contents
 
 

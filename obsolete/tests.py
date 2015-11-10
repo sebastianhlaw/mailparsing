@@ -1,6 +1,10 @@
 __author__ = 'Sebastian.Law'
 
-
+i = 5
+try:
+    print("hello"+i)
+except Exception as e:
+    print("wrong type", str(e))
 
 # stubs = raw_data['STUB']
 # text = stubs[0]
