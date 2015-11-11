@@ -96,6 +96,7 @@ class Vendor:
         for key, parameter in self._key_parameters[version].items():
             result = self.extract(lines, parameter, key)
             t.set_data_item(key, result)
+        t.set_process_time()
         return t
 
     def extract(self, lines, parameter, key):

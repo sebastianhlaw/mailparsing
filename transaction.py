@@ -1,5 +1,7 @@
 __author__ = 'Sebastian.Law'
 
+import datetime
+
 
 class Sale:
     def __init__(self):
@@ -25,6 +27,7 @@ class Sale:
         data = [None]*len(keys)
         self._dictionary = dict(zip(keys, data))
         self._email_time = None
+        self._process_time = None
 
     def get_dict(self):
         return self._dictionary
@@ -38,12 +41,11 @@ class Sale:
     def set_email_timestamp(self, timestamp):
         self._email_time = timestamp
 
+    def set_process_time(self):
+        self._process_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     def get_headings(self):
-        return ['emailTime'] + list(self._dictionary.keys())
+        return ['processTime', 'emailTime'] + list(self._dictionary.keys())
 
     def get_data(self):
-        # if self._email_timestamp is not None:
-        return [self._email_time] + list(self._dictionary.values())
-        # else:
-        #     print("email timestamp not set")
-        #     return None
+        return [self._process_time, self._email_time] + list(self._dictionary.values())
