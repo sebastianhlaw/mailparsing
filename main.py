@@ -32,7 +32,7 @@ def extract_all(data, vendors):
                 items = data[vendor_id]  # get all transaction info for the vendor
                 if items is not None:  # if there are transactions, loop through them
                     for i, item in enumerate(items):
-                        print(vendor_id, i, "====================")
+                        # print(vendor_id, i, "====================")
                         transactions.append(vendor.extract_transaction(item))
     return transactions
 
@@ -43,50 +43,51 @@ data = pickling.load()
 # data = get_gmail()
 
 
-def check_email(v, i, debug=False):
-    if v >= len(vendor_list):
-        print(str(v) + " is not valid, must be < " + str(len(vendor_list)))
+def display_email(vendor_number, email_number, save_to_file=False):
+    if vendor_number >= len(vendor_list):
+        print(str(vendor_number) + " is not valid, must be < " + str(len(vendor_list)))
         return
-    vendor = vendor_list[v]
+    vendor = vendor_list[vendor_number]
     vendor_id = vendor.get_id()
     items = data[vendor_id]
-    if i >= len(items):
-        print(str(i) + " is not valid, must be < " + str(len(items)))
+    if email_number >= len(items):
+        print(str(email_number) + " is not valid, must be < " + str(len(items)))
         return
-    # text = raw_data[vendor_id][i]
-    text = "\n".join(vendors.text_to_array(data[vendor_id][i]))
-    if debug:
-        f = open(debug_path_stub+str(v)+vendor_id+"-"+str(i)+".txt", 'w')
+    text = "\n".join(vendors.text_to_array(data[vendor_id][email_number], vendor._sale_start_tag))
+    if save_to_file:
+        f = open(debug_path_stub+str(vendor_number)+vendor_id+"-"+str(email_number)+".txt", 'w')
         f.write(text)
         f.close()
     else:
-        print(str(v)+vendor_id+"-"+str(i))
+        print(str(vendor_number)+vendor_id+"-"+str(email_number))
         print(text)
 
 
-def extract_single(v, i):
-    if v >= len(vendor_list):
-        print(str(v) + " is not valid, must be < " + str(len(vendor_list)))
+def extract_email(vendor_number, email_number):
+    if vendor_number >= len(vendor_list):
+        print(str(vendor_number) + " is not valid, must be < " + str(len(vendor_list)))
         return
-    vendor = vendor_list[v]
+    vendor = vendor_list[vendor_number]
     vendor_id = vendor.get_id()
     items = data[vendor_id]
-    if i >= len(items):
-        print(str(i) + " is not valid, must be < " + str(len(items)))
+    if email_number >= len(items):
+        print(str(email_number) + " is not valid, must be < " + str(len(items)))
         return
-    print(vendor_id, v, "number:", i)
-    t = vendor.extract_transaction(items[i])
+    print(vendor_id, vendor_number, "number:", email_number)
+    t = vendor.extract_transaction(items[email_number])
     headings = t.get_headings()
     results = t.get_data()
-    for i, h in enumerate(headings):
-        print(h, "\t\t", results[i])
+    for email_number, h in enumerate(headings):
+        print(h, "\t\t", results[email_number])
     return t
 
-# dump the transactions into the appropriate output
-# with open(files.output_file, 'a', newline='') as f:
-#     out = csv.writer(f)
-#     for i, t in enumerate(transactions):
-#         if i == 0:
-#             out.writerow(t.get_headings())
-#         out.writerow(t.get_data())
+
+transactions = extract_all(data, vendor_list)
+
+with open(files.output_file, 'a', newline='') as f:
+    out = csv.writer(f)
+    for i, t in enumerate(transactions):
+        if i == 0:
+            out.writerow(t.get_headings())
+        out.writerow(t.get_data())
 
