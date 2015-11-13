@@ -84,11 +84,13 @@ class Vendor:
     def get_gmail_folder(self):
         return 'SaleConfirms/' + self._ID
 
-    def extract_transaction(self, text):
+    def extract_transaction(self, pair):
+        assert isinstance(pair, tuple)
+        assert len(pair) == 2
         if self._key_parameters is [None]:
             print("Parameters not imported")
             return
-        text = self._bespoke_replacements(text)
+        text = self._bespoke_replacements(pair[1])
         version = self._get_parameter_version(text) - 1
         lines = text_to_array(text, self._sale_start_tag)
         # print("version:", version)
@@ -96,7 +98,8 @@ class Vendor:
         for key, parameter in self._key_parameters[version].items():
             result = self.extract(lines, parameter, key)
             t.set_data_item(key, result)
-        t.set_process_time()
+        t.set_email_timestamp(pair[0])
+        t.set_extraction_details(self._ID, version+1)
         return t
 
     def extract(self, lines, parameter, key):
@@ -176,7 +179,7 @@ class Stubhub(Vendor):
 
 class Getmein(Vendor):
     def __init__(self):
-        self._ID = 'GET'
+        self._ID = 'GMI'
         self._tag = 'getmein'
         self._sale_start_tag = "Order Summary"
         self._date_format = '%A, %d %B %Y'
@@ -208,6 +211,11 @@ class Seatwave(Vendor):
         self._time_format = '%d/%m/%Y %H:%M'
         self._versions = 1
         self._import_parameters()
+
+    def _bespoke_replacements(self, text):
+        text = text.replace("#", "")
+        text = text.replace("http://www.seatwave.com/images/global/css-images/icon/e-ticket-icon.gif", "")
+        return text
 
 
 # class Stubhub2(Vendor):

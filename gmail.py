@@ -1,7 +1,6 @@
 __author__ = 'Sebastian.Law'
 
 # TODO: deal with when there are 0 emails to pull
-# TODO: add extraction of mail timestamp
 
 import imaplib
 import getpass
@@ -9,6 +8,7 @@ import os
 import email
 import html2text
 import files
+import datetime
 
 
 def connect(default=True):
@@ -24,17 +24,12 @@ def connect(default=True):
     return connection
 
 
-def get_messages(connection, folder, search='(UNSEEN)'):
-    # TODO: assert that the inputs are reasonable
+def get_messages(connection, folder, read_only=True, *args):
     # imap.list()  # lists the items in the mailbox parent
-    typ, mailbox = connection.select(folder, readonly=True)
+    typ, mailbox = connection.select(folder, readonly=read_only)
+    typ, data = connection.uid("SEARCH", *args)
+    # *search, contains list of items e.g. "(UNSEEN)", "(SINCE 10-Oct-2015)"
     # date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
-    # search = '(SINCE {0})'.format(date)
-    # search = '(UNSEEN)'  # this is the default
-    # typ, data = imap.search(None,search)
-    # ids = data[0].split()
-    # ids = [id.decode("utf-8") for id in ids]
-    typ, data = connection.uid("SEARCH", search)
     uids = data[0].split()
     uids = [uid.decode("utf-8") for uid in uids]
     messages = []
@@ -43,8 +38,7 @@ def get_messages(connection, folder, search='(UNSEEN)'):
         for part in data:
             if isinstance(part, tuple):
                 messages.append(email.message_from_bytes(part[1]))
-                # for header_field in [ 'subject', 'to', 'from' ]:
-                #     print('%-8s: %s' % (header_field.upper(), msg[header_field]))
+    connection.close()
     return messages
 
 
@@ -73,38 +67,20 @@ def extract_message_content(message):
                             break
                     if content is not None:
                         break
-    return content
+    date_tuple = email.utils.parsedate_tz(message['Date'])
+    local_date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
+    return local_date, content
 
 
-def get_message_contents(folder, search='(UNSEEN)'):
+def get_message_contents(folder, read_only=True, *args):
     connection = connect()
-    messages = get_messages(connection, folder, search)
-    connection.close()
-    contents = [extract_message_content(m) for m in messages]
+    messages = get_messages(connection, folder, read_only, *args)
     connection.logout()
-    print("get_message_contents:", folder, "processed,", len(contents), "messages pulled.")
-    return contents
+    if messages:
+        contents = [extract_message_content(m) for m in messages]
+        print(folder, "processed,", len(contents), "messages pulled.")
+        return contents
+    else:
+        print(folder, "processed, no messages to pull.")
 
-
-# fetch = uid + ' (BODY.PEEK[HEADER] FLAGS)' #'(BODY.PEEK[HEADER.FIELDS (DATE SUBJECT)])'
-# typ, data = imap.uid("FETCH", fetch)
-
-# # Print all unread messages from a certain sender of interest
-# status, response = imap.search(None, '(UNSEEN)', '(FROM "%s")' % (sender_of_interest))
-# unread_msg_nums = response[0].split()
-# da = []
-# for e_id in unread_msg_nums:
-#     _, response = imap.fetch(e_id, '(UID BODY[TEXT])')
-#     da.append(response[0][1])
-# print da
-#
-# # Mark them as seen
-# for e_id in unread_msg_nums:
-#     imap.store(e_id, '+FLAGS', '\Seen')
-
-# def parse_list_response(line):
-#     pattern = re.compile(r'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
-#     flags, delimiter, mailbox_name = pattern.match(line).groups()
-#     mailbox_name = mailbox_name.strip('"')
-#     return (flags, delimiter, mailbox_name)
 

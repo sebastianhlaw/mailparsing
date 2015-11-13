@@ -11,6 +11,7 @@ pickle_file = os.path.join(local_path, 'private', 'emails.pkl')
 shared_path = os.path.join(os.path.expanduser('~'), 'Dropbox', 'Shared', 'Rial Corporate Dev')
 
 output_file = os.path.join(shared_path, 'automated output', 'log.csv')
+output_test = os.path.join(shared_path, 'automated output', 'test-log.csv')
 
 # output_path = os.path.join(shared_path, 'automated output')
 # unprocessed_path = os.path.join(shared_path, 'unprocessed emails')
