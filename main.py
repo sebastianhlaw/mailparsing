@@ -19,10 +19,10 @@ def pull_data(vendors, read_only=True, *search):
     return data
 
 
-def extract_all(data, vendors):
+def extract_all(data, vendor_list):
     # process the data into transactions
     transactions = []
-    for vendor in vendors:  # for each vendor
+    for vendor in vendor_list:  # for each vendor
         vendor_id = vendor.get_id()  # pull the id
         if vendor_id in data:  # if the vendor is present in the data pull
             pairs = data[vendor_id]  # get all transaction info for the vendor
@@ -32,16 +32,14 @@ def extract_all(data, vendors):
     return transactions
 
 
-def find_mail(data, vendor_list, date):
-    t = datetime.datetime.strptime(date, "%d/%m/%Y %H:%M:%S")
+def find_mail_by_date(data, vendor_list, date):
+    time = datetime.datetime.strptime(date, "%d/%m/%Y %H:%M:%S")
     for v, vendor in enumerate(vendor_list):
         vendor_id = vendor.get_id()
         data_subset = data[vendor_id]
         for i, x in enumerate(data_subset):
-            if x[0] == t:
+            if x[0] == time:
                 print(vendor_id, v, i)
-            # elif x[0].date() == t.date():
-            #     print(i, x[0], "day only")
 
 
 def display_email(data, vendor_list, vendor_number, email_number, save_to_file=False):

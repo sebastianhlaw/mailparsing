@@ -15,7 +15,7 @@ def connect(default=True):
     connection = imaplib.IMAP4_SSL('imap.gmail.com')
     username = 'gixtix.sales@gmail.com'
     if default is True:
-        password_file = open(files.password_file, 'r')
+        password_file = open(files.gmail_password_file, 'r')
         password = password_file.read()
         password_file.close()
     else:

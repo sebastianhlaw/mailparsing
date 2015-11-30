@@ -98,8 +98,7 @@ class Vendor:
         for key, parameter in self._key_parameters[version].items():
             result = self.extract(lines, parameter, key)
             t.set_data_item(key, result)
-        t.set_email_timestamp(pair[0])
-        t.set_extraction_details(self._ID, version+1)
+        t.set_extraction_details(self._ID, version+1, pair[0])
         return t
 
     def extract(self, lines, parameter, key):
