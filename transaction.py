@@ -67,15 +67,15 @@ class Sale:
     def get_headings(self, debug=False):
         headings = list(self._output_keys)
         if debug:
-            headings.append(["EmailTime"])
-            headings.append(list(self._search_keys))
+            headings.append("EmailTime")
+            headings.extend(list(self._search_keys))
         return headings
 
     def get_data(self, debug=False):
         data = [self._output_dict[k] for k in self._output_keys]
         if debug:
-            data.append([self._email_time])
-            data.append([self._search_dict[k] for k in self._search_keys])
+            data.append(self._email_time)
+            data.extend([self._search_dict[k] for k in self._search_keys])
         return data
 
     def _cleanup(self):
@@ -95,8 +95,9 @@ class Sale:
         # "Section" - construct by combining "section", "row" "seat" searches
         section = self._search_dict["section"]
         if section is not None:
-            if any(s in section.lower() for s in
-                   ("standing", "stalls", "circle", "general", "seating", "level", "upper")):
+            if "standing" in section.lower() and "general" in section.lower():
+                section = "Standing"
+            elif any(s in section.lower() for s in ("standing", "stalls", "circle", "general", "seating", "level", "upper")):
                 section = section.replace("Section", "").strip()
         row = self._search_dict["row"]
         if row is not None:
@@ -129,14 +130,19 @@ class Sale:
             if "UPS" in item:
                 self._output_dict[output_key] = "P"
             elif "Posted" in item:
-                self._search_dict[output_key] = "P"
+                self._output_dict[output_key] = "P"
             elif "E-Ticket" in item:
-                self._search_dict[output_key] = "E"
+                self._output_dict[output_key] = "E"
             elif "How should I send the tickets?" in item:
-                self._search_dict[output_key] = "TBA"
+                self._output_dict[output_key] = "TBA"
             else:
-                self._search_dict[output_key] = "[XXX] " + item
+                self._output_dict[output_key] = item
         # self._output_dict["Refundable Postage Costs"] = self._search_dict["postCost"]
         self._output_dict["Postage Refunded"] = self._search_dict["postRefund"]
         self._output_dict["Other Costs"] = self._search_dict["otherCosts"]
         self._output_dict["Sale Value"] = self._search_dict["netPrice"]
+        if not self._search_dict["netPrice"]:
+            tickets = int(self._search_dict["tickets"])
+            unit_price = float(self._search_dict["unitPrice"])
+            costs = float(self._search_dict["otherCosts"]) if self._search_dict["otherCosts"] else 0.0
+            self._output_dict["Sale Value"] = round(unit_price * tickets - costs, 2)

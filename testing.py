@@ -1,12 +1,11 @@
 __author__ = 'Sebastian.Law'
 
 import vendors
-import pickling
 import main
 import files
 
 vens = vendors.load_vendors()
-data = pickling.load()
+data = main.load_pickle(files.pickle_stub+"-2015-12-03-11-42-12.pkl")
 
 
 def extract(v, i):
@@ -23,7 +22,7 @@ def search(date):
 
 def run():
     t = main.extract_all(data, vens)
-    main.dump_data(t, files.output_test)
+    main.dump_data(t, files.output_test, True)
 
 
 # data = get_gmail()

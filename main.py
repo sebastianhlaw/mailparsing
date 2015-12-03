@@ -1,6 +1,7 @@
 __author__ = 'Sebastian.Law'
 
 import os
+import pickle
 import files
 import gmail
 import csv
@@ -8,10 +9,22 @@ import datetime
 import vendors
 
 
-def pull_data(vendors, read_only=True, *search):
+# Currently the data is pickled as a dict of the form 'SEAT': [text1, text2, ...]
+def load_pickle(file_name=files.pickle_file):
+    file = open(file_name, 'rb')
+    data = pickle.load(file)
+    return data
+
+
+def dump_pickle(data, file_name=files.pickle_file):
+    file = open(file_name, 'wb')
+    pickle.dump(data, file)
+
+
+def pull_data(vendor_list, read_only=True, *search):
     # *search = "(UNSEEN)", "(SINCE 11-Nov-2015)"
     data = {}
-    for v in vendors:
+    for v in vendor_list:
         key = v.get_id()
         folder = v.get_gmail_folder()
         content = gmail.get_message_contents(folder, read_only, *search)
@@ -42,6 +55,16 @@ def find_mail_by_date(data, vendor_list, date):
                 print(vendor_id, v, i)
 
 
+def find_mail_by_id(data, vendor_list, transaction_id):
+    item = str(transaction_id)
+    for v, vendor in enumerate(vendor_list):
+        vendor_id = vendor.get_id()
+        data_subset = data[vendor_id]
+        for i, x in enumerate(data_subset):
+            if item in x[1]:
+                print(vendor_id, v, i)
+
+
 def display_email(data, vendor_list, vendor_number, email_number, save_to_file=False):
     if vendor_number >= len(vendor_list):
         print(str(vendor_number) + " is not valid, must be < " + str(len(vendor_list)))
@@ -66,7 +89,7 @@ def display_email(data, vendor_list, vendor_number, email_number, save_to_file=F
         print(text)
 
 
-def extract_email(data, vendor_list, vendor_number, email_number):
+def extract_email(data, vendor_list, vendor_number, email_number, debug=False):
     if vendor_number >= len(vendor_list):
         print(str(vendor_number) + " is not valid, must be < " + str(len(vendor_list)))
         return
@@ -78,19 +101,20 @@ def extract_email(data, vendor_list, vendor_number, email_number):
         return
     print(vendor_id, vendor_number, "number:", email_number)
     t = vendor.extract_transaction(pairs[email_number])
-    headings = t.get_headings()
-    results = t.get_data()
+    headings = t.get_headings(debug)
+    results = t.get_data(debug)
     for email_number, h in enumerate(headings):
-        print(h, "\t\t", results[email_number])
+        buffer = " " * max(25-len(h), 0)
+        print(h, buffer, "\t", results[email_number])
     return t
 
 
-def dump_data(transactions, file):
-    # file = files.output_file
+def dump_data(transactions, file, debug=False):
     if transactions is not None:
+        isfile = os.path.isfile(file)
         with open(file, 'a', newline='') as f:
             out = csv.writer(f)
             for i, t in enumerate(transactions):
-                if i == 0:
-                    out.writerow(t.get_headings())
-                out.writerow(t.get_data())
+                if i == 0 and not isfile:
+                    out.writerow(t.get_headings(debug))
+                out.writerow(t.get_data(debug))
