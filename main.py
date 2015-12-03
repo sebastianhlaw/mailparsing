@@ -81,7 +81,10 @@ def display_email(data, vendor_list, vendor_number, email_number, save_to_file=F
         vendor._sale_start_tag)
     )
     if save_to_file:
-        f = open(os.path.join(files.local_path, 'workings', 'debug-')+str(vendor_number)+vendor_id+"-"+str(email_number)+".txt", 'w')
+        file_name = os.path.join(files.local_path, 'workings', 'debug-')+vendor_id+"("+str(vendor_number)+"-"+str(email_number)+")"
+        if save_to_file is not True:
+            file_name += "-"+str(save_to_file)
+        f = open(file_name+".txt", 'w')
         f.write(text)
         f.close()
     else:
