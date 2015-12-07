@@ -1,0 +1,41 @@
+__author__ = 'Sebastian.Law'
+
+
+import os
+import files
+import smtplib
+import email
+
+# sender = 'realcorporate@sebastianhlaw.com'
+# recipient = 'sebastian.law@duffandphelps.com'
+# password_file = open(files.sebastianhlaw_password_file, 'r')
+# password = password_file.read()
+# password_file.close()
+
+# Create the message
+# msg = email.mime.text.MIMEText('This is the body of the message.')
+# msg['To'] = email.utils.formataddr(('Recipient', recipient))
+# msg['From'] = email.utils.formataddr(('Sebastian Law (realcorporate)', sender))
+# msg['Subject'] = 'Automated update email'
+
+# msg = email.mime.multipart.MIMEMultipart(From=sender, To=recipient, Subject="Automated sales update")
+# msg.attach(email.mime.text.MIMEText("Update details"))
+# with open(files.output_logger, "rb") as f:
+#     msg.attach(email.mime.application.MIMEApplication(
+#         f.read(),
+#         Content_Disposition='attachment; filename="%s"' % os.path.basename(f),
+#         Name=os.path.basename(f)
+#     ))
+
+
+# server = smtplib.SMTP('smtp.ipage.com')
+# server.set_debuglevel(True)  # show communication with the server
+# try:
+#     server.ehlo()  # identify ourselves, prompting server for supported features
+#     if server.has_extn('STARTTLS'):  # If we can encrypt this session, do it
+#         server.starttls()
+#         server.ehlo()  # re-identify ourselves over TLS connection
+#     server.login(sender, password)
+#     server.sendmail(sender, [recipient], msg.as_string())
+# finally:
+#     server.quit()

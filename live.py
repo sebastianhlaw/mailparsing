@@ -4,15 +4,23 @@ import vendors
 import main
 import files
 import datetime
+import os
 
 vendors = vendors.load_vendors()
-data = main.pull_data(vendors, False, "(UNSEEN)", "(SINCE 02-Dec-2015)")
-print("Emails pulled.")
+
+read_only_and_testing = True
+if os.getcwd().endswith("live"):
+    read_only_and_testing = False
+data = main.pull_data(vendors, read_only_and_testing, "(UNSEEN)")  # , "(SINCE 05-Dec-2015)")
 
 today = str(datetime.date.today())
 now_timestamp = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
 now_filename = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d-%H-%M-%S')
-output_file = files.output_stub+"-"+today+".csv"
+if read_only_and_testing:
+    output_file = files.output_stub+"-test-"+today+".csv"
+else:
+    output_file = files.output_stub+"-"+today+".csv"
+logger_file = files.logger_stub+"-"+today+".txt"
 pickle_file = files.pickle_stub+"-"+now_filename+".pkl"
 
 has_data = False
@@ -30,7 +38,10 @@ if has_data:
     main.dump_data(transactions, output_file, False)
     print("Data recorded in:", output_file)
 
-log_string = now_timestamp+"\t"+today+"\t"+str(len(transactions))+" processed."
-with open(files.output_logger, 'a') as f:
-    f.write(log_string+"\n")
+log_string = now_timestamp+"\t"+str(len(transactions))
+is_file = os.path.isfile(logger_file)
+with open(logger_file, 'a') as f:
+    if not is_file:
+        f.write("Timestamp\t\t#\n")
+    f.write(log_string+'\n')
 print("Logger updated with:", log_string)

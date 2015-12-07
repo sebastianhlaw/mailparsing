@@ -138,7 +138,11 @@ class Sale:
             else:
                 self._output_dict[output_key] = item
         # self._output_dict["Refundable Postage Costs"] = self._search_dict["postCost"]
-        self._output_dict["Postage Refunded"] = self._search_dict["postRefund"]
+        post_refund = self._search_dict["postRefund"]
+        if post_refund == 0:
+            self._output_dict["Postage Refunded"] = None
+        else:
+            self._output_dict["Postage Refunded"] = post_refund
         self._output_dict["Other Costs"] = self._search_dict["otherCosts"]
         self._output_dict["Sale Value"] = self._search_dict["netPrice"]
         if not self._search_dict["netPrice"]:

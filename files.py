@@ -12,6 +12,6 @@ pickle_stub = os.path.join(local_path, 'pickles', 'sales')
 
 shared_path = os.path.join(os.path.expanduser('~'), 'Dropbox', 'Shared', 'Rial Corporate Dev')
 
-output_logger = os.path.join(shared_path, 'main', 'logger.txt')
+logger_stub = os.path.join(shared_path, 'logger', 'logger')
 output_stub = os.path.join(shared_path, 'output', 'sales')
-output_test = os.path.join(shared_path, 'output', 'sales-test.csv')
+output_test = os.path.join(shared_path, 'testing', 'sales-test.csv')

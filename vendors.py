@@ -25,7 +25,6 @@ def text_to_array(text, start_from=None):
 
 def load_vendors():
     vendors = [Stubhub(), Getmein(), Viagogo(), Seatwave()]
-    # vendors = [Stubhub(), Getmein(), Viagogo(), Seatwave(), Stubhub2()]
     return vendors
 
 
@@ -92,7 +91,7 @@ class Vendor:
             return
         text = self._bespoke_replacements(pair[1])
         version = self._get_parameter_version(text) - 1
-        lines = text_to_array(text, self._sale_start_tag)
+        lines = text_to_array(text)  #, self._sale_start_tag)
         # print("version:", version)
         t = transaction.Sale()
         for key, parameter in self._key_parameters[version].items():
@@ -215,13 +214,3 @@ class Seatwave(Vendor):
         text = text.replace("#", "")
         text = text.replace("http://www.seatwave.com/images/global/css-images/icon/e-ticket-icon.gif", "")
         return text
-
-
-# class Stubhub2(Vendor):
-#     def __init__(self):
-#         self._ID = 'STUB2'
-#         self._tag = 'stubhub'
-#         self._sale_start_tag = "Hi Stephen,"
-#         self._date_format = '%d/%m/%Y'
-#         self._time_format = '%a, %d/%m/%Y, %H:%M'
-#         self._import_parameters()
