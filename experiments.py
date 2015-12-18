@@ -1,10 +1,37 @@
 __author__ = 'Sebastian.Law'
 
-
 import os
 import files
-import smtplib
-import email
+import main
+import vendors
+
+pickle_folder = os.path.join(files.local_path, 'pickles')
+# pickle_names
+# for root, directories, file_names in os.walk(pickle_folder):
+#     for f in file_names:
+file_names = os.listdir(pickle_folder)
+pickle_names = [os.path.join(files.local_path, 'pickles', f) for f in file_names]
+all_data = [main.load_pickle(p) for p in pickle_names]
+
+vens = vendors.load_vendors()
+data = {}
+for v in vens:
+    data.update({v.get_id(): None})
+
+
+
+
+
+
+
+
+
+
+
+# import os
+# import files
+# import smtplib
+# import email
 
 # sender = 'realcorporate@sebastianhlaw.com'
 # recipient = 'sebastian.law@duffandphelps.com'

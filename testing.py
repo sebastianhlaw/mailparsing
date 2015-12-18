@@ -5,18 +5,18 @@ import main
 import files
 
 vens = vendors.load_vendors()
-data = main.load_pickle(files.pickle_stub+"-2015-12-07-16-48-50.pkl")
+data = main.load_pickle(files.pickle_stub+"-test-2015-12-18-13-50-37.pkl")
 
 
-def extract(v, i):
-    return main.extract_email(data, vens, v, i)
+def extract(v, i, debug=True):
+    return main.extract_email(data, vens, v, i, debug)
 
 
 def display(v, i, save=False):
     main.display_email(data, vens, v, i, save)
 
 
-def search(date):
+def search(date):  # this probably won't work now I changed date methodology
     main.find_mail(data, vens, date)
 
 

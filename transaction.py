@@ -24,11 +24,12 @@ class Sale:
                              "postCost",
                              "sentDate")
         self._search_dict = dict(zip(self._search_keys, [None]*len(self._search_keys)))
+        self._extraction_time = None
         self._email_time = None
+        self._extraction_version = None
         # These match Al's required outputs. Naming not so sensible, may require concatenation or manipulation from what
         # is actually extracted from the emails. The mapping from one to the other is dealt with in self._cleanup
         self._output_keys = ("processTime",
-                             "extraction",
                              "Sale ID",
                              "Sale Date",
                              "Reseller",
@@ -47,6 +48,13 @@ class Sale:
                              "Commission Rate",
                              "Paid Back from Gigtix")
         self._output_dict = dict(zip(self._output_keys, [None]*len(self._output_keys)))
+        self._venue_replacements = (("Etihad Stadium", "Etihad Stadium Manc"),
+                                    ("O2 Academy Brixton", "Brixton Academy"),
+                                    ("O2 Forum Kentish Town", "O2 Forum"),
+                                    ("O2 Shepherds Bush Empire", "Shepherds Bush Empire"),
+                                    ("SSE Arena Wembley", "Wembley Arena"),
+                                    ("Forum", "O2 Forum"),
+                                    ("London Royal Albert Hall", "Royal Albert Hall"))
 
     def get_dict(self):
         return self._search_dict
@@ -59,14 +67,16 @@ class Sale:
 
     def set_extraction_details(self, vendor_id, extraction_version, timestamp):
         self._output_dict["processTime"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self._output_dict["extraction"] = extraction_version
-        self._email_time = timestamp
+        self._extraction_version = extraction_version
+        self._extraction_time = timestamp
         self._output_dict["Reseller"] = vendor_id
         self._cleanup()
 
     def get_headings(self, debug=False):
         headings = list(self._output_keys)
         if debug:
+            headings.append("ExtractionTime")
+            headings.append("ExtractionVersion")
             headings.append("EmailTime")
             headings.extend(list(self._search_keys))
         return headings
@@ -74,6 +84,8 @@ class Sale:
     def get_data(self, debug=False):
         data = [self._output_dict[k] for k in self._output_keys]
         if debug:
+            data.append(self._extraction_time)
+            data.append(self._extraction_version)
             data.append(self._email_time)
             data.extend([self._search_dict[k] for k in self._search_keys])
         return data
@@ -83,11 +95,20 @@ class Sale:
         # "extraction" done previously
         self._output_dict["Sale ID"] = self._search_dict["saleID"]
         # "Sale Date" convert from datetime to date
-        self._output_dict["Sale Date"] = self._email_time.date()
+        sent_date = self._search_dict["sentDate"]
+        if sent_date is not None:
+            self._output_dict["Sale Date"] = str(datetime.datetime.strptime(sent_date, "%Y-%m-%d").date())
         # "Reseller" done previously
         self._output_dict["Tix Sold"] = self._search_dict["tickets"]
         self._output_dict["Artist"] = self._search_dict["artist"]
-        self._output_dict["Venue"] = self._search_dict["venue"]
+        venue = self._search_dict["venue"]
+        if venue is not None:
+            venue = venue.replace(" - ", " ").replace(",", "").replace("The ", "").strip()
+            venue = venue.replace(" London UK", "").replace(" Wembley UK", "").replace(" Manchester UK", "")
+            for x, y in self._venue_replacements:
+                if venue == x:
+                    venue = y
+            self._output_dict["Venue"] = venue.replace("arena", "Arena")
         # "gigTime" convert to datetime from date
         time = self._search_dict["gigTime"]
         if time is not None:
@@ -95,10 +116,10 @@ class Sale:
         # "Section" - construct by combining "section", "row" "seat" searches
         section = self._search_dict["section"]
         if section is not None:
-            if "standing" in section.lower() and "general" in section.lower():
+            if "standing" in section.lower() or "general admission" in section.lower():
                 section = "Standing"
-            elif any(s in section.lower() for s in ("standing", "stalls", "circle", "general", "seating", "level", "upper")):
-                section = section.replace("Section", "").strip()
+            elif any(s in section.lower() for s in ("stalls", "circle", "seating", "level", "upper")):
+                section = section.replace("Section", "Block").replace("arena", "Arena").strip()
         row = self._search_dict["row"]
         if row is not None:
             if row == "" or row == "GA":
@@ -119,9 +140,9 @@ class Sale:
                 seats = seats.replace("Seats", "").replace("Seat", "").strip()
         text = section
         if row:
-            text = text + ", Row " + row
+            text = text + " Row " + row
         if seats:
-            text = text + ", Seat(s) " + seats
+            text = text + " Seat(s) " + seats
         self._output_dict["Section"] = text
         # "Tix Type" - extract the postage method from messy text
         output_key = "Tix Type"

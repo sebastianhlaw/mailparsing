@@ -32,11 +32,12 @@ class Vendor:
     def __init__(self):
         self._ID = None
         self._tag = None
-        self._sale_start_tag = None
+        # self._sale_start_tag = None
         self._date_format = None
         self._time_format = None
         self._key_parameters = [None]
         self._versions = None
+        self._common_time_format = None
         # self.processTime = None
 
     def _bespoke_replacements(self, text):
@@ -135,13 +136,15 @@ class Vendor:
                         print(" split_string: \t", split_string)
                         print(" split_element:\t", split_element)
                         print("--------------------------------------------------------")
-                        string = "ERROR"
+                        string = "ERROR_split"
                 string = string.strip()
                 try:
                     if data_type == 'int':
                         string = ast.literal_eval(string.replace(" ", ""))
                     elif data_type == 'price':
                         string = ast.literal_eval(string.replace(" ", "").replace("£", "").replace("GBP", ""))
+                    elif data_type == 'common_time':
+                        string = str(datetime.datetime.strptime(string.strip(), self._common_time_format).date())
                     elif data_type == 'date':
                         string = str(datetime.datetime.strptime(string.strip(), self._date_format).date())
                     elif data_type == 'time':
@@ -154,7 +157,7 @@ class Vendor:
                     print(" string:       \t", string)
                     print(" data_type:    \t", data_type)
                     print("--------------------------------------------------------")
-                    string = "ERROR"
+                    string = "ERROR_convert"
                 return string
 
 
@@ -162,9 +165,10 @@ class Stubhub(Vendor):
     def __init__(self):
         self._ID = 'STUB'
         self._tag = 'stubhub'
-        self._sale_start_tag = "Hi Stephen,"
+        # self._sale_start_tag = "Hi Stephen,"
         self._date_format = '%d/%m/%Y'
         self._time_format = '%a, %d/%m/%Y, %H:%M'
+        self._common_time_format = '%d %B %Y %H:%M'
         self._versions = 2
         self._import_parameters()
 
@@ -179,9 +183,10 @@ class Getmein(Vendor):
     def __init__(self):
         self._ID = 'GMI'
         self._tag = 'getmein'
-        self._sale_start_tag = "Order Summary"
+        # self._sale_start_tag = "Order Summary"
         self._date_format = '%A, %d %B %Y'
         self._time_format = '%A, %d %B %Y %H:%M'
+        self._common_time_format = '%d %B %Y %H:%M'
         self._versions = 1
         self._import_parameters()
 
@@ -190,9 +195,10 @@ class Viagogo(Vendor):
     def __init__(self):
         self._ID = 'VIA'
         self._tag = 'viagogo'
-        self._sale_start_tag = "Order Information"
+        # self._sale_start_tag = "Order Information"
         self._date_format = '%d %B %Y'
         self._time_format = '%d %B %Y, %H:%M'
+        self._common_time_format = '%d %B %Y %H:%M'
         self._versions = 1
         self._import_parameters()
 
@@ -204,9 +210,10 @@ class Seatwave(Vendor):
     def __init__(self):
         self._ID = 'SEAT'
         self._tag = 'seatwave'
-        self._sale_start_tag = "Sale confirmation"
+        # self._sale_start_tag = "Sale confirmation"
         self._date_format = '%d/%m/%Y'
         self._time_format = '%d/%m/%Y %H:%M'
+        self._common_time_format = '%d %B %Y %H:%M'
         self._versions = 1
         self._import_parameters()
 

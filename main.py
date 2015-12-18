@@ -11,14 +11,14 @@ import vendors
 
 # Currently the data is pickled as a dict of the form 'SEAT': [text1, text2, ...]
 def load_pickle(file_name=files.pickle_file):
-    file = open(file_name, 'rb')
-    data = pickle.load(file)
+    with open(file_name, 'rb') as file:
+        data = pickle.load(file)
     return data
 
 
 def dump_pickle(data, file_name=files.pickle_file):
-    file = open(file_name, 'wb')
-    pickle.dump(data, file)
+    with open(file_name, 'wb') as file:
+        pickle.dump(data, file)
 
 
 def pull_data(vendor_list, read_only=True, *search):
@@ -76,9 +76,7 @@ def display_email(data, vendor_list, vendor_number, email_number, save_to_file=F
     if email_number >= len(texts):
         print(str(email_number) + " is not valid, must be < " + str(len(texts)))
         return
-    text = "\n".join(vendors.text_to_array(
-        vendor._bespoke_replacements(texts[email_number]),
-        vendor._sale_start_tag)
+    text = "\n".join(vendors.text_to_array(vendor._bespoke_replacements(texts[email_number]))
     )
     if save_to_file:
         file_name = os.path.join(files.local_path, 'workings', 'debug-')+vendor_id+"("+str(vendor_number)+"-"+str(email_number)+")"

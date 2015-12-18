@@ -9,19 +9,24 @@ import os
 vendors = vendors.load_vendors()
 
 read_only_and_testing = True
-if os.getcwd().endswith("live"):
+search_string = None
+if os.getcwd().endswith("live"):  # we're in the live folder
     read_only_and_testing = False
-data = main.pull_data(vendors, read_only_and_testing, "(UNSEEN)")  # , "(SINCE 05-Dec-2015)")
+    search_string = "(UNSEEN)"
+else:  # Testing mode
+    search_string = "(SINCE 15-Dec-2015)"
+data = main.pull_data(vendors, read_only_and_testing, search_string)
 
 today = str(datetime.date.today())
 now_timestamp = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
 now_filename = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d-%H-%M-%S')
 if read_only_and_testing:
     output_file = files.output_stub+"-test-"+today+".csv"
+    pickle_file = files.pickle_stub+"-test-"+now_filename+".pkl"
 else:
     output_file = files.output_stub+"-"+today+".csv"
+    pickle_file = files.pickle_stub+"-"+now_filename+".pkl"
 logger_file = files.logger_stub+"-"+today+".txt"
-pickle_file = files.pickle_stub+"-"+now_filename+".pkl"
 
 has_data = False
 for key, value in data.items():
