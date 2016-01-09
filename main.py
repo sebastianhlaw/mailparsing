@@ -41,6 +41,7 @@ def extract_all(data, vendor_list):
             pairs = data[vendor_id]  # get all transaction info for the vendor
             if pairs is not None:  # if there are transactions, loop through them
                 for pair in pairs:
+                    print(vendor_id, pair[0])
                     transactions.append(vendor.extract_transaction(pair))
     return transactions
 

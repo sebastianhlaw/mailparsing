@@ -140,6 +140,8 @@ class Sale:
             else:
                 seats = seats.replace("Seats", "").replace("Seat", "").strip()
         text = section
+        if not text:
+            text = ""
         if row:
             text = text + " Row " + row
         if seats:
