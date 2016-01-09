@@ -54,7 +54,8 @@ class Sale:
                                     ("O2 Shepherds Bush Empire", "Shepherds Bush Empire"),
                                     ("SSE Arena Wembley", "Wembley Arena"),
                                     ("Forum", "O2 Forum"),
-                                    ("London Royal Albert Hall", "Royal Albert Hall"))
+                                    ("London Royal Albert Hall", "Royal Albert Hall"),
+                                    ("Stadium Queen Elizabeth Olympic Park", "Olympic Stadium"))
 
     def get_dict(self):
         return self._search_dict
