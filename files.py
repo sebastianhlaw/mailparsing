@@ -4,8 +4,12 @@ import os
 
 local_path = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev')
 
-# parameters_file = os.path.join(local_path, 'private', 'tables.csv')
-parameters_file = 'tables.csv'
+if os.getcwd().endswith("live"):
+    parameters_file = os.path.join(local_path, 'private', 'tables.csv')
+else:
+    parameters_file = os.path.join(local_path, 'private', 'tables-dev.csv')
+
+# parameters_file = 'tables.csv'
 gmail_password_file = os.path.join(local_path, 'private', 'gmail_password.txt')
 sebastianhlaw_password_file = os.path.join(local_path, 'private', 'sebastianhlaw_password.txt')
 pickle_file = os.path.join(local_path, 'pickles', 'emails.pkl')
