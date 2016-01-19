@@ -1,11 +1,17 @@
 __author__ = 'Sebastian.Law'
 
 import os
+import inspect
+
+def live_location():
+    filename = inspect.getframeinfo(inspect.currentframe()).filename
+    path = os.path.dirname(os.path.abspath(filename))
+    return path.endswith("live")
 
 local_path = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev')
 
-if os.getcwd().endswith("live"):
-    parameters_file = os.path.join(local_path, 'private', 'tables.csv')
+if live_location():
+    parameters_file = os.path.join(local_path, 'private', 'tables-live.csv')
 else:
     parameters_file = os.path.join(local_path, 'private', 'tables-dev.csv')
 

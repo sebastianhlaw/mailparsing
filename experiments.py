@@ -1,12 +1,17 @@
 __author__ = 'Sebastian.Law'
 
 import os
-import datetime
+import inspect
+
+# filename = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev', 'workings', 'output.txt')
+# print(filename)
+# with open(filename, 'a') as f:
+#     f.write(str(datetime.datetime.now())+"\n")
 
 # import files
 # import main
 # import vendors
-#
+
 # pickle_folder = os.path.join(files.local_path, 'pickles')
 # # pickle_names
 # # for root, directories, file_names in os.walk(pickle_folder):
@@ -19,13 +24,6 @@ import datetime
 # data = {}
 # for v in vens:
 #     data.update({v.get_id(): None})
-
-filename = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev', 'workings', 'output.txt')
-print(filename)
-with open(filename, 'a') as f:
-    f.write(str(datetime.datetime.now())+"\n")
-
-
 
 # import os
 # import files
