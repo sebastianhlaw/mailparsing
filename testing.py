@@ -5,7 +5,7 @@ import main
 import files
 
 vens = vendors.load_vendors()
-data = main.load_pickle(files.pickle_stub+"-2016-01-08-15-25-48.pkl")
+data = main.load_pickle("C:/Users/Sebastian.Law/Google Drive/Rial Corporate Dev/workings/sales-2016-02-01-15-31-40.pkl")
 
 
 def extract(v, i, debug=True):

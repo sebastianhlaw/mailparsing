@@ -11,7 +11,8 @@ import datetime
 
 
 def text_to_array(text, start_from=None):
-    text = text.replace(">", " ").replace("<", " ").replace("\t", " ").replace("*", " ").replace("|", "\n")  # todo: put these in the approporiate trade-specific replacement
+    text = text.replace(">", " ").replace("<", " ")\
+        .replace("\t", " ").replace("*", " ").replace("|", "\n").replace("&amp;", "&")  # todo: put these in the approporiate trade-specific replacement
     array = re.split("\\n", text, maxsplit=0, flags=0)
     array = [l.strip() for l in array if l.strip() != '']
     if start_from is not None:

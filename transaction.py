@@ -151,14 +151,13 @@ class Sale:
         output_key = "Tix Type"
         item = self._search_dict["ticketType"]
         if item:
-            if "UPS" in item:
+            if any(s in item for s in ("UPS", "Posted")):
                 self._output_dict[output_key] = "P"
-            elif "Posted" in item:
-                self._output_dict[output_key] = "P"
-            elif "E-Ticket" in item:
+            elif any(s in item for s in ("E-Ticket", "fulfillPDF")):
                 self._output_dict[output_key] = "E"
-            elif "How should I send the tickets?" in item:
-                self._output_dict[output_key] = "TBA"
+            elif any(s in item for s in ("How should I send the tickets?", "fulfillBarcode", "report")):
+                self._output_dict[output_key] = None
+
             else:
                 self._output_dict[output_key] = item
         # self._output_dict["Refundable Postage Costs"] = self._search_dict["postCost"]
