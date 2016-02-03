@@ -51,6 +51,7 @@ class Sale:
         self._venue_replacements = (("Etihad Stadium", "Etihad Stadium Manc"),
                                     ("O2 Academy Brixton", "Brixton Academy"),
                                     ("O2 Forum Kentish Town", "O2 Forum"),
+                                    ("O2 Shepherds Bush Empire (Shepherds Bush Empire)", "Shepherds Bush Empire"),
                                     ("O2 Shepherds Bush Empire", "Shepherds Bush Empire"),
                                     ("SSE Arena Wembley", "Wembley Arena"),
                                     ("Forum", "O2 Forum"),
@@ -119,8 +120,12 @@ class Sale:
         if section is not None:
             if "standing" in section.lower() or "general admission" in section.lower():
                 section = "Standing"
+            elif "FLOOR SEATED" in section:
+                section = "Floor"
             elif any(s in section.lower() for s in ("stalls", "circle", "seating", "level", "upper")):
                 section = section.replace("Section", "Block").replace("arena", "Arena").strip()
+            if section == "Block Unreserved Seating":
+                section = "Unreserved Seating"
         row = self._search_dict["row"]
         if row is not None:
             if row == "" or row == "GA":
