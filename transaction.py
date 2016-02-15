@@ -1,5 +1,3 @@
-__author__ = 'Sebastian.Law'
-
 import datetime
 
 

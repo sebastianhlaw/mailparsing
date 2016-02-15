@@ -1,4 +1,3 @@
-__author__ = 'Sebastian.Law'
 
 import os
 import inspect

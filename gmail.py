@@ -1,6 +1,3 @@
-__author__ = 'Sebastian.Law'
-
-# TODO: deal with when there are 0 emails to pull
 
 import imaplib
 import getpass

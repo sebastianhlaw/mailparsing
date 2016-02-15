@@ -14,7 +14,7 @@ if files.live_location():  # we're in the live folder
     read_only_and_testing = False
     search_string = "(UNSEEN)"
 else:  # Testing mode
-    search_string = "(SINCE 18-Jan-2016)"
+    search_string = "(SINCE 01-Feb-2016)"
 data = main.pull_data(vendors, read_only_and_testing, search_string)
 
 today = str(datetime.date.today())
