@@ -1,6 +1,31 @@
 
-import os
-import inspect
+import files
+
+bad = [1, "f", 5]
+
+
+def doubler(lst):
+    output = []
+    for i, x in enumerate(lst):
+        try:
+            output.append(x*1.5)
+        except Exception as e:
+            print(e)
+        continue
+    return output
+
+
+
+
+# import datetime
+#
+#
+# def test_args(*args):
+#     if not args:
+#         default_search_date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
+#         return default_search_date
+#     else:
+#         return args
 
 # filename = os.path.join(os.path.expanduser('~'), 'Google Drive', 'Rial Corporate Dev', 'workings', 'output.txt')
 # print(filename)

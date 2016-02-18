@@ -2,6 +2,7 @@
 import os
 import inspect
 
+
 def live_location():
     filename = inspect.getframeinfo(inspect.currentframe()).filename
     path = os.path.dirname(os.path.abspath(filename))
@@ -14,13 +15,12 @@ if live_location():
 else:
     parameters_file = os.path.join(local_path, 'private', 'tables-dev.csv')
 
-# parameters_file = 'tables.csv'
-gmail_password_file = os.path.join(local_path, 'private', 'gmail_password.txt')
-pickle_file = os.path.join(local_path, 'pickles', 'emails.pkl')
-pickle_stub = os.path.join(local_path, 'pickles', 'sales')
+# gmail_password_file = os.path.join(local_path, 'private', 'gmail_password.txt')
+
+pickle_folder = os.path.join(local_path, 'pickles')
 
 shared_path = os.path.join(os.path.expanduser('~'), 'Dropbox', 'Shared', 'Rial Corporate Dev')
 
-logger_stub = os.path.join(shared_path, 'logger', 'logger')
-output_stub = os.path.join(shared_path, 'output', 'sales')
-output_test = os.path.join(shared_path, 'testing', 'sales-test.csv')
+logger_folder = os.path.join(shared_path, 'logger')
+output_folder = os.path.join(shared_path, 'output')
+testing_folder = os.path.join(shared_path, 'testing')

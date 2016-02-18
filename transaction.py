@@ -22,7 +22,7 @@ class Sale:
                              "postCost",
                              "sentDate")
         self._search_dict = dict(zip(self._search_keys, [None]*len(self._search_keys)))
-        self._extraction_time = None
+        # self._extraction_time = None
         self._email_time = None
         self._extraction_version = None
         # These match Al's required outputs. Naming not so sensible, may require concatenation or manipulation from what
@@ -65,17 +65,18 @@ class Sale:
         else:
             print("key '" + key + "' is not recognised.")
 
-    def set_extraction_details(self, vendor_id, extraction_version, timestamp):
+    def set_extraction_details(self, vendor_id, extraction_version):
+    # def set_extraction_details(self, vendor_id, extraction_version, timestamp):
         self._output_dict["processTime"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._extraction_version = extraction_version
-        self._extraction_time = timestamp
+        # self._extraction_time = timestamp
         self._output_dict["Reseller"] = vendor_id
         self._cleanup()
 
     def get_headings(self, debug=False):
         headings = list(self._output_keys)
         if debug:
-            headings.append("ExtractionTime")
+            # headings.append("ExtractionTime")
             headings.append("ExtractionVersion")
             headings.append("EmailTime")
             headings.extend(list(self._search_keys))
@@ -84,7 +85,7 @@ class Sale:
     def get_data(self, debug=False):
         data = [self._output_dict[k] for k in self._output_keys]
         if debug:
-            data.append(self._extraction_time)
+            # data.append(self._extraction_time)
             data.append(self._extraction_version)
             data.append(self._email_time)
             data.extend([self._search_dict[k] for k in self._search_keys])
@@ -160,7 +161,6 @@ class Sale:
                 self._output_dict[output_key] = "E"
             elif any(s in item for s in ("How should I send the tickets?", "fulfillBarcode", "report")):
                 self._output_dict[output_key] = None
-
             else:
                 self._output_dict[output_key] = item
         # self._output_dict["Refundable Postage Costs"] = self._search_dict["postCost"]

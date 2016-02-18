@@ -12,7 +12,8 @@ import datetime
 
 def text_to_array(text, start_from=None):
     text = text.replace(">", " ").replace("<", " ")\
-        .replace("\t", " ").replace("*", " ").replace("|", "\n").replace("&amp;", "&")  # todo: put these in the approporiate trade-specific replacement
+        .replace("\t", " ").replace("*", " ").replace("|", "\n").replace("&amp;", "&")
+    # todo: above: put these in the appropriate trade-specific replacement
     array = re.split("\\n", text, maxsplit=0, flags=0)
     array = [l.strip() for l in array if l.strip() != '']
     if start_from is not None:
@@ -85,13 +86,12 @@ class Vendor:
     def get_gmail_folder(self):
         return 'SaleConfirms/' + self._ID
 
-    def extract_transaction(self, pair):
-        assert isinstance(pair, tuple)
-        assert len(pair) == 2
+    def extract_transaction(self, content):
+        assert type(content) == str
         if self._key_parameters is [None]:
             print("Parameters not imported")
             return
-        text = self._bespoke_replacements(pair[1])
+        text = self._bespoke_replacements(content)
         version = self._get_parameter_version(text) - 1
         lines = text_to_array(text)  #, self._sale_start_tag)
         # print("version:", version)
@@ -99,7 +99,7 @@ class Vendor:
         for key, parameter in self._key_parameters[version].items():
             result = self.extract(lines, parameter, key)
             t.set_data_item(key, result)
-        t.set_extraction_details(self._ID, version+1, pair[0])
+        t.set_extraction_details(self._ID, version+1)
         return t
 
     def extract(self, lines, parameter, key):
