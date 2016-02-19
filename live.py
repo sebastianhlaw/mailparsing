@@ -29,6 +29,7 @@ else:
 logger_file = os.path.join(files.logger_folder, "logger-"+today+".txt")
 
 transactions = []
+mm_count = 0
 if minimal_messages:
     main.dump_minimal_messages(minimal_messages, pickle_file)
     print("Pickled in:", pickle_file)
@@ -36,8 +37,9 @@ if minimal_messages:
     print("Transactions extracted.")
     main.dump_data(transactions, output_file, False)
     print("Data recorded in:", output_file)
+    mm_count = len(minimal_messages)
 
-log_string = now_timestamp+"\t"+str(len(minimal_messages))+" messages,\t"+str(len(transactions))+" extracted"
+log_string = now_timestamp+"\t"+str(mm_count)+" messages,\t"+str(len(transactions))+" extracted"
 is_file = os.path.isfile(logger_file)
 with open(logger_file, 'a') as f:
     if not is_file:
